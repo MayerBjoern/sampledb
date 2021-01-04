@@ -464,6 +464,7 @@ def _validate_compound_schema(schema: dict, path: typing.List[str]) -> None:
     if 'placeholder' in schema and not isinstance(schema['placeholder'], str):
         raise ValidationError('placeholder must be str', path)
 
+
 def _validate_sample_schema(schema: dict, path: typing.List[str]) -> None:
     """
     Validates the given sample object schema and raises a ValidationError if it is invalid.

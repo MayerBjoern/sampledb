@@ -14,7 +14,6 @@ from ...logic import actions, objects, datatypes, users
 from ...models import ActionType
 from ..errors import ObjectDoesNotExistError, ValidationError, ValidationMultiError, UserDoesNotExistError
 from .utils import units_are_valid
-# from .validation_preprocessor import _validation_preprocessor_quantity
 
 
 def validate(instance: typing.Union[dict, list], schema: dict, path: typing.Optional[typing.List[str]] = None) -> None:
@@ -43,7 +42,6 @@ def validate(instance: typing.Union[dict, list], schema: dict, path: typing.Opti
     elif schema['type'] == 'bool':
         return _validate_bool(instance, schema, path)
     elif schema['type'] == 'quantity':
-        #_validation_preprocessor_quantity(instance, schema)
         return _validate_quantity(instance, schema, path)
     elif schema['type'] == 'calculatedquantity':
         return _validate_calculatedquantity(instance, schema, path)
