@@ -14,6 +14,8 @@
   {% include "objects/forms/form_bool.html" %}
 {% elif schema['type'] == 'quantity' %}
   {% include "objects/forms/form_quantity.html" %}
+{% elif schema['type'] == 'calculatedquantity' %}
+  {% include "objects/forms/form_calculatedquantity.html" %}
 {% elif schema.type == 'object' %}
   {% include "objects/forms/form_object.html" %}
 {% elif schema.type == 'array' %}

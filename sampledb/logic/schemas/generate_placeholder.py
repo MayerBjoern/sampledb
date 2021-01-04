@@ -35,6 +35,8 @@ def generate_placeholder(schema: dict, path: typing.Optional[typing.List[str]] =
         return _generate_bool_placeholder(schema, path)
     elif schema['type'] == 'quantity':
         return _generate_quantity_placeholder(schema, path)
+    elif schema['type'] == 'calculatedquantity':
+        return _generate_calculatedquantity_placeholder(schema, path)
     elif schema['type'] == 'sample':
         return _generate_sample_placeholder(schema, path)
     elif schema['type'] == 'measurement':
@@ -197,6 +199,18 @@ def _generate_quantity_placeholder(schema: dict, path: typing.List[str]) -> typi
         'units': units,
         'magnitude_in_base_units': magnitude_in_base_units
     }
+
+
+def _generate_calculatedquantity_placeholder(schema: dict, path: typing.List[str]) -> typing.Union[dict, None]:
+    """
+    Generates a placeholder quantity object based on an object schema.
+
+    :param schema: the sampledb object schema
+    :param path: the path to this subschema
+    :return: the generated object or None, if there is no default magnitude (in base units)
+    :raise SchemaError: if the units are invalid
+    """
+    return None
 
 
 def _generate_sample_placeholder(schema: dict, path: typing.List[str]) -> None:
