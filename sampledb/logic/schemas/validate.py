@@ -42,6 +42,8 @@ def validate(instance: typing.Union[dict, list], schema: dict, path: typing.Opti
     elif schema['type'] == 'quantity':
         _validation_preprocessor_quantity(instance, schema)
         return _validate_quantity(instance, schema, path)
+    elif schema['type'] == 'calculatedquantity':
+        return _validate_calculatedquantity(instance, schema, path)
     elif schema['type'] == 'sample':
         return _validate_sample(instance, schema, path)
     elif schema['type'] == 'measurement':
@@ -339,6 +341,41 @@ def _validate_quantity(instance: dict, schema: dict, path: typing.List[str]) -> 
         raise ValidationError('Invalid units, expected units for dimensionality "{}"'.format(str(schema_quantity.dimensionality)), path)
     if str(quantity.dimensionality) != instance['dimensionality']:
         raise ValidationError('Invalid dimensionality, expected "{}"'.format(str(schema_quantity.dimensionality)), path)
+
+def _validate_calculatedquantity(instance: dict, schema: dict, path: typing.List[str]) -> None:
+    """
+    Validates the given instance using the given quantity object schema and raises a ValidationError if it is invalid.
+
+    :param instance: the sampledb object
+    :param schema: the valid sampledb object schema
+    :param path: the path to this subinstance / subschema
+    :raise ValidationError: if the schema is invalid.
+    """
+    if not isinstance(instance, dict):
+        raise ValidationError('instance must be dict', path)
+    valid_keys = {'_type', 'units', 'dimensionality', 'formula'}
+    required_keys = valid_keys
+    schema_keys = set(instance.keys())
+    invalid_keys = schema_keys - valid_keys
+    if invalid_keys:
+        raise ValidationError('unexpected keys in schema: {}'.format(invalid_keys), path)
+    missing_keys = required_keys - schema_keys
+    if missing_keys:
+        raise ValidationError('missing keys in schema: {}'.format(missing_keys), path)
+    if instance['_type'] != 'calculatedquantity':
+        raise ValidationError('expected _type "calculatedquantity"', path)
+    if not isinstance(instance['formula'], str):
+        raise ValidationError('formula must be str', path)
+    if not isinstance(instance['units'], str):
+        raise ValidationError('units must be str', path)
+    if not units_are_valid(instance['units']):
+        raise ValidationError('Invalid/Unknown units', path)
+    if not isinstance(instance['dimensionality'], str):
+        raise ValidationError('dimensionality must be str', path)
+    try:
+        schema_quantity = datatypes.Quantity(1.0, units=schema['units'])
+    except Exception:
+        raise ValidationError('Unable to create schema quantity', path)
 
 
 def _validate_sample(instance: dict, schema: dict, path: typing.List[str]) -> None:

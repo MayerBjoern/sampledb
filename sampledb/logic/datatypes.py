@@ -228,6 +228,121 @@ class Quantity(object):
         return quantity
 
 
+@JSONEncoder.serializable_type('calculatedquantity')
+class CalculatedQuantity(object):
+    JSON_SCHEMA = {
+        'type': 'object',
+        'properties': {
+            '_type': {
+                'enum': ['calculatedquantity']
+            },
+            'dimensionality': {
+                'type': 'string',
+                'magnitude_in_base_units': 'string'
+            },
+            'magnitude_in_base_units': {
+                'type': 'number'
+            },
+            'magnitude': {
+                'type': 'number'
+            },
+            'formula': {
+                'type': 'string'
+            },
+            'units': {
+                'anyOf': [
+                    {'type': 'null'},
+                    {'type': 'string'}
+                ]
+            }
+        },
+        'required': ['_type', 'dimensionality', 'units', 'formula'],
+        'additionalProperties': False
+    }
+
+    def __init__(self, formula, units):
+        self.formula = formula
+
+        # TODO
+        self.magnitude = 1
+
+        if units is None:
+            self.units = None
+            self.pint_units = ureg.Unit('1')
+            self.magnitude_in_base_units = self.magnitude
+        else:
+            if isinstance(units, ureg.Unit):
+                self.pint_units = units
+                self.units = str(self.pint_units)
+            else:
+                self.units = units
+                try:
+                    self.pint_units = ureg.Unit(self.units)
+                except (pint.errors.UndefinedUnitError, AttributeError):
+                    raise ValueError("Invalid units '{}'".format(self.units))
+
+            self.magnitude_in_base_units = ureg.Quantity(self.magnitude, self.pint_units).to_base_units().magnitude
+        """
+        self.magnitude = float(magnitude)
+        if units is None:
+            self.units = None
+            self.pint_units = ureg.Unit('1')
+            self.magnitude_in_base_units = self.magnitude
+        else:
+            if isinstance(units, ureg.Unit):
+                self.pint_units = units
+                self.units = str(self.pint_units)
+            else:
+                self.units = units
+                try:
+                    self.pint_units = ureg.Unit(self.units)
+                except (pint.errors.UndefinedUnitError, AttributeError):
+                    raise ValueError("Invalid units '{}'".format(self.units))
+            if already_in_base_units is False:
+                self.magnitude_in_base_units = ureg.Quantity(self.magnitude, self.pint_units).to_base_units().magnitude
+            else:
+                self.magnitude_in_base_units = self.magnitude
+                pint_base_units = ureg.Quantity(1, self.pint_units).to_base_units().units
+                self.magnitude = ureg.Quantity(self.magnitude_in_base_units, pint_base_units).to(self.pint_units).magnitude
+        self.dimensionality = self.pint_units.dimensionality
+        """
+
+    def __repr__(self):
+        return '<{0}(formula={1.formula}, units="{1.units}")>'.format(type(self).__name__, self)
+
+    def __eq__(self, other):
+        #ureg.Quantity(self.magnitude, self.pint_units) == ureg.Quantity(other.magnitude, other.pint_units)
+        return self.formula == other.formula
+
+    def to_json(self):
+        return {
+            'magnitude': self.magnitude,
+            'magnitude_in_base_units': self.magnitude_in_base_units,
+            'units': self.units,
+            'formula': self.formula,
+            'dimensionality': str(self.dimensionality)
+        }
+
+    @classmethod
+    def from_json(cls, obj):
+        formula = obj['formula']
+        units = obj['units']
+        if units is None:
+            pint_units = ureg.Unit('1')
+        else:
+            try:
+                pint_units = ureg.Unit(units)
+            except (pint.errors.UndefinedUnitError, AttributeError):
+                raise ValueError("Invalid units '{}'".format(units))
+
+        quantity = cls(formula, units)
+        if pint_units.dimensionless:
+            assert obj['dimensionality'] == 'dimensionless'
+        else:
+            assert (1 * pint_units).check(obj['dimensionality'])
+        return quantity
+
+
 @JSONEncoder.serializable_type('bool')
 class Boolean(object):
     JSON_SCHEMA = {
