@@ -5,38 +5,58 @@ var func = [
 var funcStr = "";
 
 function replaceVariables(inp) {
-    var variables = new RegExp("([a-z]+[a-zA-Z0-9]*)")
-         while(variables.test(inp)) {
-             var match = inp.match(variables)[1];
-             inp = inp.replace(match, testVarList(match));
-             try {
-                 match = inp.match(variables)[1];
-             } catch(Error) {
-                 return inp;
-             }
-             var val = getValue(String("object__" + match + "__magnitude"));
-             inp = String(inp).replace(match, val);
-         }
+    // RegExp zum Suchen von Variablen
+    var variables = new RegExp("([a-z]+[a-zA-Z0-9]*)");
+    // Solange Variablen gefunden werden
+    while(variables.test(inp)) {
+        // Findet passende Variable
+        var match = inp.match(variables)[1];
+        // Ersetzt Variable durch Ergebnis von Suche nach Variablen Liste
+        inp = inp.replace(match, testVarList(match));
+        // Wenn noch Variablen zu finden sind
+        try {
+            // Wird match neu nach Variable belegt
+            match = inp.match(variables)[1];
+        } catch(Error) {
+            // Sonst wird der input zurueckgegeben
+            return inp;
+        }
+        // Die gefundene Variable wird durch Wert ersetzt
+        var val = getValue(String("object__" + match + "__magnitude"));
+        // In dem input String wird die gefundene Variable ersetzt
+        inp = String(inp).replace(match, val);
+    }
+    // Rueckgabe Ergebnis
     return inp;
 }  
 
 function testVarList(inp) {
+    // Leerer String um Ergebnisse einzulesen
     var str = "";
+    // Zaehler um zu zaehlen wie vielte Variable
     var counter = 0;
+    // Wenn eine Menge von Variablen gefunden wird
     if($('input[name^="object__' + inp + '"]').length > 2) {
+        // Betrachte jedes gefundene Feld
         $('input[name^="object__' + inp + '"]').each(function () {
+            // Wenn ein Quantity Feld
             if (/.*__magnitude.*/.test($(this).attr('name'))) {
+                // Varible auslesen
                 var val = $(this).val();
+                // Variable zu STring hinzufuegen
                 if (counter == 0) {
                     str += val;
                 } else {
                     str += ';' + val;
                 }
+                // Counter
                 counter++;
             }
         });
+        // Rueckgabe String
         return str;
     } else {
+        // Rueckgabe input
         return inp;
     }
 }
