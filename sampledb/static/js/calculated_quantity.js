@@ -1,3 +1,11 @@
+/***
+ * This script should be able to recognize which input fields have the opportunity to figure out a term that is given as an attribute.
+ * To make this possible there are the following steps:
+ *  1. check every input field if ist has got the attribute 'formula' (testIfCalculatedInput())
+ *  2. if the input field has got this attribute find the variables in the term and set an onblur so that if the user actualizes the variable the field will be actualized too (setOnBlur())
+ * @param inp
+ */
+
 var calculatedQuantityList = [];
 
 function testIfCalculatedInput(inp) {
@@ -10,7 +18,7 @@ function testIfCalculatedInput(inp) {
 
 function setOnBlur(inp) {
      var actualFormula = $('input[name="' + inp + '"]').attr('formula');
-     var variables = new RegExp("([a-z]+[a-zA-Z0-9]*)")
+     var variables = new RegExp("([a-z]+[a-zA-Z0-9]*)");
      while(variables.test(actualFormula)) {
          var match  = actualFormula.match(variables)[1];
          var str = "";
