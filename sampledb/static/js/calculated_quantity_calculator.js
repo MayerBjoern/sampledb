@@ -8,15 +8,38 @@ function replaceVariables(inp) {
     var variables = new RegExp("([a-z]+[a-zA-Z0-9]*)")
          while(variables.test(inp)) {
              var match = inp.match(variables)[1];
-             var val = getValue(String("object__" + match + "__magnitude"));
-             if (isNaN(val)) {
-                 throw new Error("NEV");
-             } else {
-                 inp = String(inp).replace(match, val);
+             inp = inp.replace(match, testVarList(match));
+             try {
+                 match = inp.match(variables)[1];
+             } catch(Error) {
+                 return inp;
              }
+             var val = getValue(String("object__" + match + "__magnitude"));
+             inp = String(inp).replace(match, val);
          }
     return inp;
 }  
+
+function testVarList(inp) {
+    var str = "";
+    var counter = 0;
+    if($('input[name^="object__' + inp + '"]').length > 2) {
+        $('input[name^="object__' + inp + '"]').each(function () {
+            if (/.*__magnitude.*/.test($(this).attr('name'))) {
+                var val = $(this).val();
+                if (counter == 0) {
+                    str += val;
+                } else {
+                    str += ';' + val;
+                }
+                counter++;
+            }
+        });
+        return str;
+    } else {
+        return inp;
+    }
+}
 
 function BRACKETS(inp) {
 
@@ -180,16 +203,14 @@ function FIGURE(inp) {
 
 function getValue(inp) {
 
-    // Sucht das uebergebene Variablenfeld in HTML Dokument
-    var ret = $('input[name="' + inp + '"]').html();
-
-    // Wenn vorhanden gibt es zurueck
-    if (String(ret).length <= 0) {
-        ret = $('input[name="' + inp + '"]').val();
+    var val = $('input[name="' + inp + '"]').val();
+    alert(inp);
+    if(isNaN(val)) {
+        throw new Error("ERROR NEV");
+    } else {
+        return Number(val);
     }
 
-    // Wird als Number zurueckgegeben
-    return (Number(ret));
 }
 
 function PRODUKT(inp) {
@@ -454,15 +475,15 @@ function CALCULATOR(inp) {
     funcStr = new RegExp(String(str + "\)\$"));
 
     // Versuche Berechnung durchzufuehren gib Fehler bei Fehler aus
-     try {
+     //try {
 
         inp = BRACKETS("\(" + inp + "\)");
         return inp;
 
-      } catch (err) {
+      //} catch (err) {
 
-         return (err);
+         //return (err);
 
-      }
+      //}
 
 }
