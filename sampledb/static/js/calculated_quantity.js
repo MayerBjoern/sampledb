@@ -18,28 +18,36 @@ function testIfCalculatedInput(inp) {
 
 function setOnBlur(inp) {
      var actualFormula = $('input[name="' + inp + '"]').attr('formula');
+
      var variables = new RegExp("([a-z]+[a-zA-Z0-9]*)");
      while(variables.test(actualFormula)) {
          var match  = actualFormula.match(variables)[1];
          var str = "";
+         var counter = 0;
          $('input[name^="object__' + match + '"]').each(function() {
              var name = $(this).attr('name');
              if(/.*__magnitude.*/.test(name)) {
                  $('input[name="' + name + '"]').blur(function() {
                     refresh()
                  });
-                 str += name.match(/.*(object__)(.+)(__magnitude).*/)[2] + ';';
+                 if(counter == 0) {
+                     str += name.match(/.*(object__)(.+)(__magnitude).*/)[2];
+                 } else {
+                     str += ";" + name.match(/.*(object__)(.+)(__magnitude).*/)[2];
+                 }
+                 counter ++;
              }
              actualFormula = actualFormula.replace(match, "");
          });
-         if(str != "") {
-             $('input[name="' + inp + '"]').attr('formula', $('input[name="' + inp + '"]').attr('formula').replace(match, str));
-         }
+         // if(str != "") {
+         //    $('input[name="' + inp + '"]').attr('formula', $('input[name="' + inp + '"]').attr('formula').replace(/[^a-zA-Z0-9\(\)\;\+\-\*\/]*/ + match + /[^a-zA-Z0-9\)\(\;\+\-\*\/]/, str));
+         // }
          $('input[name="object__' + match + '__magnitude"]').blur(function() {
              refresh()
          });
          actualFormula = actualFormula.replace(match, "");
      }
+     actualFormula = $('input[name="' + inp + '"]').attr('formula');
      refresh();
 }
 
