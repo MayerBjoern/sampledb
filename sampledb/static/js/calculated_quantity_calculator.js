@@ -16,7 +16,7 @@ function replaceVariables(inp) {
              }
          }
     return inp;
-}
+}  
 
 function BRACKETS(inp) {
 
