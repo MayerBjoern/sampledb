@@ -39,9 +39,6 @@ function setOnBlur(inp) {
              }
              actualFormula = actualFormula.replace(match, "");
          });
-         // if(str != "") {
-         //    $('input[name="' + inp + '"]').attr('formula', $('input[name="' + inp + '"]').attr('formula').replace(/[^a-zA-Z0-9\(\)\;\+\-\*\/]*/ + match + /[^a-zA-Z0-9\)\(\;\+\-\*\/]/, str));
-         // }
          $('input[name="object__' + match + '__magnitude"]').blur(function() {
              refresh()
          });

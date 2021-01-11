@@ -224,7 +224,6 @@ function FIGURE(inp) {
 function getValue(inp) {
 
     var val = $('input[name="' + inp + '"]').val();
-    alert(inp);
     if(isNaN(val)) {
         throw new Error("ERROR NEV");
     } else {
