@@ -304,6 +304,8 @@ $(function() {
       type = "bool";
     } else if (schema['type'] === 'quantity') {
       type = "quantity";
+    } else if(schema['type'] === 'calculatedquantity') {
+      type = "calculatedquantity";
     } else if (schema['type'] === 'datetime') {
       type = "datetime";
     } else if (schema['type'] === 'tags') {
@@ -344,6 +346,8 @@ $(function() {
         updateObjectReferenceProperty(path, real_path);
       } else if (type === "quantity") {
         updateQuantityProperty(path, real_path);
+      } else if (type === "calculatedquantity") {
+        updateCalculatedQuantityProperty(path, real_path);
       } else if (type === "datetime") {
         updateDatetimeProperty(path, real_path);
       }
@@ -1004,6 +1008,56 @@ $(function() {
       $('button[name="action_submit"]').prop('disabled', (JSON.stringify(window.schema_editor_errors) !== '{}'));
     }
 
+    function updateCalculatedQuantityProperty(path, real_path) {
+      var has_error = false;
+      updateGenericProperty(path, real_path);
+      var schema = JSON.parse(input_schema.text());
+      var property_schema = schema['properties'][real_path[real_path.length-1]];
+      property_schema["type"] = "calculatedquantity";
+      property_schema["formula"] = $('#schema-editor-object__' + path.join('__') + '-quantity-formula-input');
+
+      var units_input = $('#schema-editor-object__' + path.join('__') + '-calculatedquantity-units-input');
+      var units = units_input.val();
+      var units_group = units_input.parent();
+      var units_help = units_group.find('.help-block');
+      // TODO: validate units
+      if (units.length > 0) {
+        property_schema['units'] = units;
+        units_help.text("");
+        units_group.removeClass("has-error");
+      } else {
+        property_schema['units'] = "1";
+      }
+
+      var formula_input = $('#schema-editor-object__' + path.join('__') + '-calculatedquantity-formula-input');
+      var formula_value = formula_input.val();
+      var default_group = formula_input.parent();
+      var default_help = default_group.find('.help-block');
+
+
+      var test_formula = "\(" + formula_value + "\)";
+      while(/\(.*?\)/.test(test_formula)) {
+        var match = test_formula.match(/\(.[^\(\)]*?\)/)[0];
+        test_formula = test_formula.replace(match, "");
+      }
+      if(test_formula != "") {
+        formula_help.text("Please enter valid formula");
+        formula_group.addClass("has-error");
+        has_error = true;
+      } else {
+      }
+      property_schema["formula"] = formula_value;
+
+      schema['properties'][real_path[real_path.length-1]] = property_schema;
+      input_schema.text(JSON.stringify(schema, null, 4));
+
+      window.schema_editor_errors[path.join('__') + '__specific'] = true;
+      if (!has_error) {
+        delete window.schema_editor_errors[path.join('__') + '__specific'];
+      }
+      $('button[name="action_submit"]').prop('disabled', (JSON.stringify(window.schema_editor_errors) !== '{}'));
+    }
+
     var required_label = node.find('.schema-editor-generic-property-required-label');
     var required_input = node.find('.schema-editor-generic-property-required-input');
     required_input.attr('id', 'schema-editor-object__' + path.join('__') + '-required-input');
@@ -1370,6 +1424,8 @@ $(function() {
     default_checkbox.on('change', updateProperty.bind(path));
     default_input.on('change', updateProperty.bind(path));
 
+
+
     var placeholder_label = node.find('.schema-editor-quantity-property-placeholder-label');
     var placeholder_input = node.find('.schema-editor-quantity-property-placeholder-input');
     var placeholder_checkbox = node.find('.schema-editor-quantity-property-placeholder-checkbox');
@@ -1412,6 +1468,35 @@ $(function() {
       units_group.find('.help-block').text("Please enter valid units");
       window.schema_editor_errors[path.join('__') + '__specific'] = true;
     }
+    var formula_label = node.find('.schema-editor-calculatedquantity-property-formula-label');
+    var formula_input = node.find('.schema-editor-calculatedquantity-property-formula-input');
+    formula_input.attr('id', 'schema-editor-object__' + path.join('__') + '-calculatedquantity-formula-input');
+    formula_label.attr('for', formula_input.attr('id'));
+    if (type === 'calculatedquantity' && 'formula' in schema) {
+      formula_input.val(schema["formula"]);
+    } else {
+      default_input.val("");
+    }
+
+    formula_input.on('change', updateProperty.bind(path));
+
+    var units_label = node.find('.schema-editor-calculatedquantity-property-units-label');
+    var units_input = node.find('.schema-editor-calculatedquantity-property-units-input');
+    units_input.attr('id', 'schema-editor-object__' + path.join('__') + '-calculatedquantity-units-input');
+    units_label.attr('for', units_input.attr('id'));
+    if (type === 'calculatedquantity' && 'units' in schema) {
+      units_input.val(schema['units']);
+    } else {
+      units_input.val("");
+    }
+    units_input.on('change', updateProperty.bind(path));
+    if (window.schema_editor_error_message !== null && window.schema_editor_error_message === ("invalid units (at " + path[0] + ")")) {
+      var units_group = units_input.parent();
+      units_group.addClass("has-error");
+      units_group.find('.help-block').text("Please enter valid units");
+      window.schema_editor_errors[path.join('__') + '__specific'] = true;
+    }
+
 
     return node;
   }

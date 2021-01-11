@@ -36,6 +36,7 @@ def action_type(type_id):
         return show_action_type_form(type_id)
     try:
         action_type = logic.actions.get_action_type(type_id)
+        print(action_type)
     except logic.errors.ActionTypeDoesNotExistError:
         return flask.abort(404)
     return flask.render_template(
