@@ -10,14 +10,14 @@ var calculatedQuantityList = [];
 
 function testIfCalculatedInput(inp) {
 
-   if($('input[name="' + inp + '"]')[0].hasAttribute('formula')) {
+   if($('label[name="' + inp + '"]')[0].hasAttribute('formula')) {
         calculatedQuantityList.push(inp);
         setOnBlur(inp);
     }
 }
 
 function setOnBlur(inp) {
-     var actualFormula = $('input[name="' + inp + '"]').attr('formula');
+     var actualFormula = $('label[name="' + inp + '"]').attr('formula');
 
      var variables = new RegExp("([a-z]+[a-zA-Z0-9]*)");
      while(variables.test(actualFormula)) {
@@ -49,13 +49,17 @@ function setOnBlur(inp) {
 }
 
 function refresh() {
-    for(var i = 0; i < calculatedQuantityList.length; i++) {
-        $('input[name="' + calculatedQuantityList[i]).val(CALCULATOR($('input[name="' + calculatedQuantityList[i]).attr('formula')));
-    }
+    try {
+        for (var i = 0; i < calculatedQuantityList.length; i++) {
+            $('label[name="' + calculatedQuantityList[i]).text(CALCULATOR($('label[name="' + calculatedQuantityList[i]).attr('formula')));
+        }
+    } catch(Error) {}
 }
 
-$('input').each(function() {
-    testIfCalculatedInput($(this).attr('name'));
+$('label').each(function() {
+    if ($(this)[0].hasAttribute('name')) {
+        testIfCalculatedInput($(this).attr('name'));
+    }
 });
 
 
