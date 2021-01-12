@@ -49,6 +49,8 @@ def parse_any_form_data(form_data, schema, id_prefix, errors, required=False):
         return parse_boolean_form_data(form_data, schema, id_prefix, errors, required=required)
     elif schema.get('type') == 'quantity':
         return parse_quantity_form_data(form_data, schema, id_prefix, errors, required=required)
+    elif schema.get('type') == 'compound':
+        return parse_compound_form_data(form_data, schema, id_prefix, errors, required=required)
     elif schema.get('type') == 'tags':
         return parse_tags_form_data(form_data, schema, id_prefix, errors, required=required)
     elif schema.get('type') == 'hazards':
@@ -243,6 +245,20 @@ def parse_quantity_form_data(form_data, schema, id_prefix, errors, required=Fals
     schemas.validate(data, schema)
     return data
 
+@form_data_parser
+def parse_compound_form_data(form_data, schema, id_prefix, errors, required=False):
+    keys = [key for key in form_data.keys() if key.startswith(id_prefix + '__')]
+    if keys != [id_prefix + '__compound']:
+        raise ValueError('invalid text form data')
+    text = form_data.get(id_prefix + '__compound', [None])[0]
+    if text is None and not required:
+        return None
+    data = {
+        '_type': 'compound',
+        'smile': str(text)
+    }
+    schemas.validate(data, schema)
+    return data
 
 @form_data_parser
 def parse_datetime_form_data(form_data, schema, id_prefix, errors, required=False):

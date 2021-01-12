@@ -346,6 +346,43 @@ class CalculatedQuantity(object):
             assert (1 * pint_units).check(obj['dimensionality'])
         return quantity
 
+@JSONEncoder.serializable_type('compound')
+class Compound(object):
+    JSON_SCHEMA = {
+        'type': 'object',
+        'properties': {
+            '_type': {
+                'enum': ['compound']
+            },
+            'smile_input': {
+                'type': 'string'
+            },
+        },
+        'required': ['_type', 'clear', 'smile'],
+        'additionalProperties': False
+    }
+
+    def __init__(self, smile):
+        self.smile = smile
+
+    def __repr__(self):
+        return '<{0}(smile={1.smile})>'.format(type(self).__name__, self)
+
+    def __eq__(self, other):
+        return self.smile == other.smile
+
+    def to_json(self):
+        return {
+            'smile': str(self.smile),
+            'dimensionality': str(self.dimensionality)
+        }
+
+    @classmethod
+    def from_json(cls, obj):
+        smile = obj['smile']
+        compound = cls(smile)
+        return compound
+
 
 @JSONEncoder.serializable_type('bool')
 class Boolean(object):

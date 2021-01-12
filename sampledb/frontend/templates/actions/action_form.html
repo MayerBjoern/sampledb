@@ -237,6 +237,7 @@
             <option value="user">User</option>
             <option value="object_reference">Object Reference</option>
             <option value="plotly_chart">Plotly Chart</option>
+            <option value="compound">Compound</option>
           </select>
         </div>
         <div class="schema-editor-form-group">
@@ -372,21 +373,20 @@
         </div>
       </div>
 
-  <div class="schema-editor-property-settings schema-editor-calculatedquantity-property-settings">
+      <div class="schema-editor-property-settings schema-editor-compound-property-settings">
         <div class="schema-editor-form-group">
-          <label class="control-label schema-editor-calculatedquantity-property-units-label">Units</label>
-          <input type="text" class="form-control schema-editor-calculatedquantity-property-units-input" id="input-schema-name-text-default" placeholder="Units" value="">
-          <span class="help-block"></span>
+          <label class="schema-editor-checkbox"><input type="checkbox" class="schema-editor-compound-property-placeholder-checkbox"></label>
+          <label class="control-label schema-editor-compound-property-placeholder-label">Placeholder</label>
+          <input type="text" class="form-control schema-editor-compound-property-placeholder-input" placeholder="Placeholder" value="">
         </div>
         <div class="schema-editor-form-group">
-         <label class="control-label schema-editor-calculatedquantity-property-formula-label">Formula</label>
-          <input type="text" class="form-control schema-editor-calculatedquantity-property-formula-input" placeholder="Formula" value="">
-          <span class="help-block"></span>
+          <label class="schema-editor-checkbox"><input type="checkbox" class="schema-editor-compound-property-default-checkbox"></label>
+          <label class="control-label schema-editor-compound-property-default-label">Default</label>
+          <input type="text" class="form-control schema-editor-compound-property-default-input" placeholder="Default" value="">
         </div>
       </div>
+
     </div>
-
-
   </div>
   <div class="modal fade" id="schemaEditorWarningModal" tabindex="-1" role="dialog" aria-labelledby="schemaEditorWarningModalLabel">
     <div class="modal-dialog" role="document">

@@ -1,0 +1,7 @@
+<div class="form-group row{% if id_prefix+'_compound' in errors %} has-error{% elif id_prefix+'_compound' in form_data %} has-success{% endif %}" style="padding-right:0.75em">
+  <label class="control-label col-md-3">{{ schema.title }}</label>
+  <div class="col-md-9">
+      <input type="compound" class="form-control" name="{{ id_prefix }}_compound" placeholder="{{ schema.placeholder or schema.title }}" value="{{ data.smile }}">
+    {% if 'note' in schema %}<span class="help-block"><strong>Note:</strong> {{ schema['note'] }}</span>{% endif %}
+  </div>
+</div>

@@ -52,6 +52,8 @@ def validate_schema(schema: dict, path: typing.Optional[typing.List[str]] = None
         return _validate_quantity_schema(schema, path)
     elif schema['type'] == 'calculatedquantity':
         return _validate_calculatedquantity_schema(schema, path)
+    elif schema['type'] == 'compound':
+        return _validate_compound_schema(schema, path)
     elif schema['type'] == 'sample':
         return _validate_sample_schema(schema, path)
     elif schema['type'] == 'measurement':
@@ -432,6 +434,35 @@ def _validate_calculatedquantity_schema(schema: dict, path: typing.List[str]) ->
     if 'note' in schema and not isinstance(schema['note'], str):
         raise ValidationError('note must be str', path)
 
+def _validate_compound_schema(schema: dict, path: typing.List[str]) -> None:
+    """
+    Validates the given quantity object schema and raises a ValidationError if it is invalid.
+
+    :param schema: the sampledb object schema
+    :param path: the path to this subschema
+    :raise ValidationError: if the schema is invalid.
+    """
+    valid_keys = {'type', 'title', 'smile', 'default', 'note', 'placeholder', 'dataverse_export'}
+    required_keys = {'title', 'type', 'smile'}
+    schema_keys = set(schema.keys())
+    invalid_keys = schema_keys - valid_keys
+    if invalid_keys:
+        raise ValidationError('unexpected keys in schema: {}'.format(invalid_keys), path)
+    missing_keys = required_keys - schema_keys
+    if missing_keys:
+        raise ValidationError('missing keys in schema: {}'.format(missing_keys), path)
+
+    if not isinstance(schema['smile'], str):
+        raise ValidationError('Smile String must be str', path)
+
+    if 'default' in schema and not isinstance(schema['default'], str):
+        raise ValidationError('default must be String', path)
+    if 'dataverse_export' in schema and not isinstance(schema['dataverse_export'], bool):
+        raise ValidationError('dataverse_export must be True or False', path)
+    if 'note' in schema and not isinstance(schema['note'], str):
+        raise ValidationError('note must be str', path)
+    if 'placeholder' in schema and not isinstance(schema['placeholder'], str):
+        raise ValidationError('placeholder must be str', path)
 
 def _validate_sample_schema(schema: dict, path: typing.List[str]) -> None:
     """

@@ -1,0 +1,28 @@
+<div class="row" style="padding-right:0.75em">
+    <label class="col-md-3" style="text-align: right">{{ schema.title }}  </label>
+  {{ data.smile }}
+    <a id="smile-more-details-link-{{ schema.smile }}" onClick="smileClick()">more details</a>
+    <div id="detailed-view-{{ schema.smile }}" style="visibility:hidden">
+        <canvas id="canvas-{{ data.smile }}" width="400" height="40"></canvas>
+    </div>
+  {#</div>#}
+</div>
+ <script src="https://unpkg.com/smiles-drawer@1.0.10/dist/smiles-drawer.min.js"></script>
+<script>
+     let input = "{{ data.smile }}";
+        let drawer = new SmilesDrawer.Drawer({width: 400, height: 100});
+        SmilesDrawer.parse(input, function (tree) {
+            drawer.draw(tree, 'canvas-{{ data.smile }}', 'light', false);
+        });
+    function smileClick() {
+        if($('#detailed-view-{{ schema.smile }}').attr('style') == 'visibility:visible') {
+            $('#detailed-view-{{ schema.smile }}').attr('style', 'visibility:hidden');
+            $('#smile-more-details-link-{{ schema.smile }}').html('more details');
+         }
+        else {
+            $('#detailed-view-{{ schema.smile }}').attr('style', 'visibility:visible');
+            $('#smile-more-details-link-{{ schema.smile }}').html('less details');
+        }
+       // $('#detailed-view-{{ schema.smile }}').attr('style', 'visibility:visible');
+    }
+</script>

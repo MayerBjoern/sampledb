@@ -316,6 +316,8 @@ $(function() {
       return null;
     } else if (schema['type'] === 'user') {
       type = "user";
+    } else if (schema['type'] === 'compound') {
+      type = "compound";
     } else if (schema['type'] === 'plotly_chart') {
       type = "plotly_chart";
     } else {
@@ -356,6 +358,8 @@ $(function() {
         updateCalculatedQuantityProperty(path, real_path);
       } else if (type === "datetime") {
         updateDatetimeProperty(path, real_path);
+      } else if (type === "compound") {
+        updateCompoundProperty(path, real_path);
       } else if (type === "plotly_chart") {
         updatePlotlyChartProperty(path, real_path);
       }
@@ -945,7 +949,41 @@ $(function() {
       }
       property_schema["formula"] = formula_value;
 
+      schema['properties'][real_path[real_path.length - 1]] = property_schema;
+      input_schema.text(JSON.stringify(schema, null, 4));
+
+      window.schema_editor_errors[path.join('__') + '__specific'] = true;
+      if (!has_error) {
+        delete window.schema_editor_errors[path.join('__') + '__specific'];
+      }
+      $('button[name="action_submit"]').prop('disabled', (JSON.stringify(window.schema_editor_errors) !== '{}'));
+    }
+
+    function updateCompoundProperty(path, real_path) {
+      updateGenericProperty(path, real_path);
+      var has_error = false;
+      var schema = JSON.parse(input_schema.text());
+      var property_schema = schema['properties'][real_path[real_path.length-1]];
+      property_schema["type"] = "compound";
+
+      property_schema["smile"] = "";
+
+      var has_default = $('#schema-editor-object__' + path.join('__') + '-text-default-checkbox').prop('checked');
+      var default_value = $('#schema-editor-object__' + path.join('__') + '-text-default-input').val();
+
+      if (has_default) {
+        property_schema['default'] = default_value;
+      }
+
+      var has_placeholder = $('#schema-editor-object__' + path.join('__') + '-text-placeholder-checkbox').prop('checked');
+      var placeholder_value = $('#schema-editor-object__' + path.join('__') + '-text-placeholder-input').val();
+
+      if (has_placeholder) {
+        property_schema['placeholder'] = placeholder_value;
+      }
+
       schema['properties'][real_path[real_path.length-1]] = property_schema;
+
       input_schema.text(JSON.stringify(schema, null, 4));
 
       window.schema_editor_errors[path.join('__') + '__specific'] = true;
@@ -1133,6 +1171,58 @@ $(function() {
       units_group.find('.help-block').text("Please enter valid units");
       window.schema_editor_errors[path.join('__') + '__specific'] = true;
     }
+
+    var default_label = node.find('.schema-editor-compound-property-default-label');
+    var default_input = node.find('.schema-editor-compound-property-default-input');
+    var default_checkbox = node.find('.schema-editor-compound-property-default-checkbox');
+    default_checkbox.attr('id', 'schema-editor-object__' + path.join('__') + '-text-compound-checkbox');
+    default_input.attr('id', 'schema-editor-object__' + path.join('__') + '-compound-default-input');
+    default_label.attr('for', default_input.attr('id'));
+    if (type === 'text' && 'default' in schema) {
+      default_input.val(schema['default']);
+      default_checkbox.prop('checked', true);
+      default_input.prop('disabled', false);
+    } else {
+      default_input.val("");
+      default_checkbox.prop('checked', false);
+      default_input.prop('disabled', true);
+    }
+    default_checkbox.on('change', function() {
+      var default_input = $(this).parent().parent().find('.schema-editor-compound-property-default-input');
+      if ($(this).prop('checked')) {
+        default_input.prop('disabled', false);
+      } else {
+        default_input.prop('disabled', true);
+      }
+    });
+    default_checkbox.on('change', updateProperty.bind(path));
+    default_input.on('change', updateProperty.bind(path));
+
+    var placeholder_label = node.find('.schema-editor-compound-property-placeholder-label');
+    var placeholder_input = node.find('.schema-editor-compound-property-placeholder-input');
+    var placeholder_checkbox = node.find('.schema-editor-compound-property-placeholder-checkbox');
+    placeholder_checkbox.attr('id', 'schema-editor-object__' + path.join('__') + '-compound-placeholder-checkbox');
+    placeholder_input.attr('id', 'schema-editor-object__' + path.join('__') + '-compound-placeholder-input');
+    placeholder_label.attr('for', placeholder_input.attr('id'));
+    if (type === 'text' && 'placeholder' in schema) {
+      placeholder_input.val(schema['placeholder']);
+      placeholder_checkbox.prop('checked', true);
+      placeholder_input.prop('disabled', false);
+    } else {
+      placeholder_input.val("");
+      placeholder_checkbox.prop('checked', false);
+      placeholder_input.prop('disabled', true);
+    }
+    placeholder_checkbox.on('change', function() {
+      var placeholder_input = $(this).parent().parent().find('.schema-editor-compound-property-placeholder-input');
+      if ($(this).prop('checked')) {
+        placeholder_input.prop('disabled', false);
+      } else {
+        placeholder_input.prop('disabled', true);
+      }
+    });
+    placeholder_checkbox.on('change', updateProperty.bind(path));
+    placeholder_input.on('change', updateProperty.bind(path));
 
 
     var default_checkbox = node.find('.schema-editor-user-property-default-checkbox');
