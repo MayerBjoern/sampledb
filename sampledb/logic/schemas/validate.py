@@ -11,7 +11,9 @@ from ...logic import actions, objects, datatypes, users
 from ...models import ActionType
 from ..errors import ObjectDoesNotExistError, ValidationError, ValidationMultiError, UserDoesNotExistError
 from .utils import units_are_valid
-from .validation_preprocessor import _validation_preprocessor_quantity
+from .validation_preprocessor import _validation_preprocessor_quantity, _validation_preprocessor_calculatedquantity
+
+current_object = None
 
 
 def validate(instance: typing.Union[dict, list], schema: dict, path: typing.Optional[typing.List[str]] = None) -> None:
@@ -32,6 +34,8 @@ def validate(instance: typing.Union[dict, list], schema: dict, path: typing.Opti
     if schema['type'] == 'array':
         return _validate_array(instance, schema, path)
     elif schema['type'] == 'object':
+        global current_object
+        current_object = instance
         return _validate_object(instance, schema, path)
     elif schema['type'] == 'text':
         return _validate_text(instance, schema, path)
@@ -43,6 +47,7 @@ def validate(instance: typing.Union[dict, list], schema: dict, path: typing.Opti
         _validation_preprocessor_quantity(instance, schema)
         return _validate_quantity(instance, schema, path)
     elif schema['type'] == 'calculatedquantity':
+        _validation_preprocessor_calculatedquantity(instance, schema, current_object)
         return _validate_calculatedquantity(instance, schema, path)
     elif schema['type'] == 'sample':
         return _validate_sample(instance, schema, path)
@@ -342,6 +347,7 @@ def _validate_quantity(instance: dict, schema: dict, path: typing.List[str]) -> 
     if str(quantity.dimensionality) != instance['dimensionality']:
         raise ValidationError('Invalid dimensionality, expected "{}"'.format(str(schema_quantity.dimensionality)), path)
 
+
 def _validate_calculatedquantity(instance: dict, schema: dict, path: typing.List[str]) -> None:
     """
     Validates the given instance using the given quantity object schema and raises a ValidationError if it is invalid.
@@ -353,7 +359,7 @@ def _validate_calculatedquantity(instance: dict, schema: dict, path: typing.List
     """
     if not isinstance(instance, dict):
         raise ValidationError('instance must be dict', path)
-    valid_keys = {'_type', 'units', 'dimensionality', 'formula'}
+    valid_keys = {'_type', 'units', 'dimensionality', 'formula', 'magnitude', 'magnitude_in_base_units'}
     required_keys = valid_keys
     schema_keys = set(instance.keys())
     invalid_keys = schema_keys - valid_keys
@@ -370,12 +376,24 @@ def _validate_calculatedquantity(instance: dict, schema: dict, path: typing.List
         raise ValidationError('units must be str', path)
     if not units_are_valid(instance['units']):
         raise ValidationError('Invalid/Unknown units', path)
+    if not isinstance(instance['magnitude'], float) and not isinstance(instance['magnitude'], int):
+        raise ValidationError('magnitude must be float or int', path)
+    try:
+        quantity = datatypes.CalculatedQuantity(instance['magnitude'], formula=schema['formula'], units=instance['units'])
+    except Exception:
+        raise ValidationError('Unable to create quantity', path)
+
     if not isinstance(instance['dimensionality'], str):
         raise ValidationError('dimensionality must be str', path)
     try:
         schema_quantity = datatypes.Quantity(1.0, units=schema['units'])
     except Exception:
         raise ValidationError('Unable to create schema quantity', path)
+
+    if quantity.dimensionality != schema_quantity.dimensionality:
+        raise ValidationError('Invalid units, expected units for dimensionality "{}"'.format(str(schema_quantity.dimensionality)), path)
+    if str(quantity.dimensionality) != instance['dimensionality']:
+        raise ValidationError('Invalid dimensionality, expected "{}"'.format(str(schema_quantity.dimensionality)), path)
 
 
 def _validate_sample(instance: dict, schema: dict, path: typing.List[str]) -> None:

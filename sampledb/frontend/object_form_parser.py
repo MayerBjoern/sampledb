@@ -47,6 +47,8 @@ def parse_any_form_data(form_data, schema, id_prefix, errors, required=False):
         return parse_datetime_form_data(form_data, schema, id_prefix, errors, required=required)
     elif schema.get('type') == 'bool':
         return parse_boolean_form_data(form_data, schema, id_prefix, errors, required=required)
+    elif schema.get('type') == 'calculatedquantity':
+        return parse_calculatedquantity_form_data(form_data, schema, id_prefix, errors, required=required)
     elif schema.get('type') == 'quantity':
         return parse_quantity_form_data(form_data, schema, id_prefix, errors, required=required)
     elif schema.get('type') == 'tags':
@@ -235,6 +237,32 @@ def parse_quantity_form_data(form_data, schema, id_prefix, errors, required=Fals
         'units': units
     }
     schemas.validate(data, schema)
+    return data
+
+
+@form_data_parser
+def parse_calculatedquantity_form_data(form_data, schema, id_prefix, errors, required=False):
+    keys = [key for key in form_data.keys() if key.startswith(id_prefix + '__')]
+    # TODO: validate schema?
+    if set(keys) != {id_prefix + '__magnitude', id_prefix + '__units'} and keys != [id_prefix + '__magnitude']:
+        raise ValueError('invalid calculatedquantity form data')
+
+    if id_prefix + '__units' in form_data:
+        units = form_data[id_prefix + '__units'][0]
+        try:
+            pint_units = ureg.Unit(units)
+        except pint.UndefinedUnitError:
+            raise ValueError('invalid units')
+    else:
+        units = '1'
+        pint_units = ureg.Unit('1')
+    dimensionality = str(pint_units.dimensionality)
+    data = {
+        '_type': 'calculatedquantity',
+        'dimensionality': dimensionality,
+        'units': units
+    }
+    #schemas.validate(data, schema)
     return data
 
 

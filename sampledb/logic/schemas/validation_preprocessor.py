@@ -10,6 +10,7 @@ import flask
 
 from ...logic import objects, datatypes, errors, units
 from .utils import units_are_valid, get_dimensionality_for_units
+from .quantity_calculations import calculate
 
 
 def _validation_preprocessor_quantity(instance: dict, schema: dict) -> None:
@@ -44,3 +45,15 @@ def _validation_preprocessor_quantity(instance: dict, schema: dict) -> None:
         magnitude_datatype = magnitude_base_datatype
 
     instance.update(magnitude_datatype.to_json())
+
+
+def _validation_preprocessor_calculatedquantity(instance: dict, schema: dict, object_data: dict) -> None:
+    if object_data is None:
+        return None
+
+    formula = schema['formula']
+    magnitude = calculate(formula, object_data)
+
+    c_quantity = datatypes.CalculatedQuantity(magnitude, formula, schema['units'])
+
+    instance.update(c_quantity.to_json())

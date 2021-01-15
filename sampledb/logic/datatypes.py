@@ -256,15 +256,13 @@ class CalculatedQuantity(object):
                 ]
             }
         },
-        'required': ['_type', 'dimensionality', 'units', 'formula'],
+        'required': ['_type', 'dimensionality', 'units', 'formula', 'magnitude', 'magnitude_in_base_units'],
         'additionalProperties': False
     }
 
-    def __init__(self, formula, units):
+    def __init__(self, magnitude, formula, units):
         self.formula = formula
-
-        # TODO
-        self.magnitude = 1
+        self.magnitude = float(magnitude)
 
         if units is None:
             self.units = None
@@ -282,33 +280,10 @@ class CalculatedQuantity(object):
                     raise ValueError("Invalid units '{}'".format(self.units))
 
             self.magnitude_in_base_units = ureg.Quantity(self.magnitude, self.pint_units).to_base_units().magnitude
-        """
-        self.magnitude = float(magnitude)
-        if units is None:
-            self.units = None
-            self.pint_units = ureg.Unit('1')
-            self.magnitude_in_base_units = self.magnitude
-        else:
-            if isinstance(units, ureg.Unit):
-                self.pint_units = units
-                self.units = str(self.pint_units)
-            else:
-                self.units = units
-                try:
-                    self.pint_units = ureg.Unit(self.units)
-                except (pint.errors.UndefinedUnitError, AttributeError):
-                    raise ValueError("Invalid units '{}'".format(self.units))
-            if already_in_base_units is False:
-                self.magnitude_in_base_units = ureg.Quantity(self.magnitude, self.pint_units).to_base_units().magnitude
-            else:
-                self.magnitude_in_base_units = self.magnitude
-                pint_base_units = ureg.Quantity(1, self.pint_units).to_base_units().units
-                self.magnitude = ureg.Quantity(self.magnitude_in_base_units, pint_base_units).to(self.pint_units).magnitude
         self.dimensionality = self.pint_units.dimensionality
-        """
 
     def __repr__(self):
-        return '<{0}(formula={1.formula}, units="{1.units}")>'.format(type(self).__name__, self)
+        return '<{0}(formula={1.magnitude}, formula={1.formula}, units="{1.units}")>'.format(type(self).__name__, self)
 
     def __eq__(self, other):
         #ureg.Quantity(self.magnitude, self.pint_units) == ureg.Quantity(other.magnitude, other.pint_units)
@@ -327,6 +302,7 @@ class CalculatedQuantity(object):
     def from_json(cls, obj):
         formula = obj['formula']
         units = obj['units']
+        magnitude = obj['magnitude']
         if units is None:
             pint_units = ureg.Unit('1')
         else:
@@ -335,7 +311,7 @@ class CalculatedQuantity(object):
             except (pint.errors.UndefinedUnitError, AttributeError):
                 raise ValueError("Invalid units '{}'".format(units))
 
-        quantity = cls(formula, units)
+        quantity = cls(magnitude, formula, units)
         if pint_units.dimensionless:
             assert obj['dimensionality'] == 'dimensionless'
         else:
