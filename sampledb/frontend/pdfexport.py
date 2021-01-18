@@ -165,6 +165,8 @@ def _handle_any(data, schema, path, canvas):
         _handle_bool(data, schema, path, canvas)
     elif schema['type'] == 'quantity':
         _handle_quantity(data, schema, path, canvas)
+    elif schema['type'] == 'calculatedquantity':
+        _handle_calculatedquantity(data, schema, path, canvas)
     elif schema['type'] == 'sample':
         _handle_sample(data, schema, path, canvas)
     elif schema['type'] == 'measurement':
@@ -227,6 +229,15 @@ def _handle_array(data, schema, path, canvas):
 
 
 def _handle_quantity(data, schema, path, canvas):
+    if data['units'] == '1':
+        text = '• {}: {}'.format(schema['title'], data['magnitude_in_base_units'])
+    else:
+        quantity = logic.datatypes.Quantity.from_json(data)
+        text = '• {}: {:g} {}'.format(schema['title'], quantity.magnitude, logic.units.prettify_units(quantity.units))
+    _append_text(canvas, text)
+
+
+def _handle_calculatedquantity(data, schema, path, canvas):
     if data['units'] == '1':
         text = '• {}: {}'.format(schema['title'], data['magnitude_in_base_units'])
     else:
