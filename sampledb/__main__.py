@@ -1,4 +1,5 @@
-# coding: utf-8
+# coding: utf-8    print("a")
+
 """
 Scripts for administrating SampleDB
 
