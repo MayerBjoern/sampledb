@@ -686,7 +686,6 @@ def show_object_form(object, action, previous_object=None, should_upgrade_schema
                     validate(object_data, schema)
                 except ValidationError as e:
                     # TODO: proper logging
-                    print(e)
                     print('object schema validation failed')
                     # TODO: handle error
                     flask.abort(400)

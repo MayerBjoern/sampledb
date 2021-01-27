@@ -37,15 +37,14 @@ def _validation_preprocessor_quantity(instance: dict, schema: dict) -> None:
     if 'magnitude_in_base_units' in instance:
         magnitude_base_datatype = datatypes.Quantity(instance['magnitude_in_base_units'], units=instance['units'],
                                                      already_in_base_units=True)
-    if magnitude_datatype is not None and magnitude_base_datatype is not None:
-        magnitude_datatype_json = magnitude_base_datatype.to_json()
-        magnitude_base_datatype_json = magnitude_base_datatype.to_json()
 
-        # it is necessary to check if the difference between the two magnitudes (magnitude_base_datatype; magnitude_datatype) is less than 1E-10 because the numbers can be different on about 1E-14
-        if magnitude_base_datatype_json['magnitude'] - magnitude_datatype_json['magnitude'] > 1E-10 or magnitude_base_datatype_json['units'] != magnitude_datatype_json['units'] or magnitude_base_datatype_json['dimensionality'] != magnitude_datatype_json['dimensionality']:
-            raise errors.ValidationError('magnitude and magnitude_in_base_units do not match, either set only one or make sure both match', None)
+    if magnitude_datatype is not None and magnitude_base_datatype is not None \
+            and magnitude_datatype.magnitude != magnitude_base_datatype.magnitude:
+        raise errors.ValidationError(
+            'magnitude and magnitude_in_base_units do not match, either set only one or make sure both match', None)
     elif magnitude_datatype is None:
         magnitude_datatype = magnitude_base_datatype
+
     instance.update(magnitude_datatype.to_json())
 
 
