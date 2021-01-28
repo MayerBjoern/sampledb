@@ -37,7 +37,9 @@ def _validation_preprocessor_quantity(instance: dict, schema: dict) -> None:
         magnitude_base_datatype = datatypes.Quantity(instance['magnitude_in_base_units'], units=instance['units'],
                                                      already_in_base_units=True)
 
-    if magnitude_datatype is not None and magnitude_base_datatype is not None and magnitude_datatype != magnitude_base_datatype:
+    # Comparison based on magnitude to ignore minimal base_unit differences
+    if magnitude_datatype is not None and magnitude_base_datatype is not None \
+            and magnitude_datatype.magnitude != magnitude_base_datatype.magnitude:
         raise errors.ValidationError(
             'magnitude and magnitude_in_base_units do not match, either set only one or make sure both match', None)
     elif magnitude_datatype is None:
