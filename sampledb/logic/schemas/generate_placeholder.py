@@ -37,6 +37,8 @@ def generate_placeholder(schema: dict, path: typing.Optional[typing.List[str]] =
         return _generate_quantity_placeholder(schema, path)
     elif schema['type'] == 'calculatedquantity':
         return _generate_calculatedquantity_placeholder(schema, path)
+    elif schema['type'] == 'plotly_chart':
+        return _generate_plotly_chart_placeholder(schema, path)
     elif schema['type'] == 'sample':
         return _generate_sample_placeholder(schema, path)
     elif schema['type'] == 'measurement':
@@ -210,6 +212,16 @@ def _generate_calculatedquantity_placeholder(schema: dict, path: typing.List[str
     """
     return None
 
+
+def _generate_plotly_chart_placeholder(schema: dict, path: typing.List[str]) -> typing.Union[dict, None]:
+    """
+    Generates a placeholder plotly_chart object based on an object schema.
+
+    :param schema: the sampledb object schema
+    :param path: the path to this subschema
+    :return: the generated object or None, if there is no default text
+    """
+    return None
 
 def _generate_sample_placeholder(schema: dict, path: typing.List[str]) -> None:
     """

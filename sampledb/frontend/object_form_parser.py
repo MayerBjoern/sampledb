@@ -51,6 +51,8 @@ def parse_any_form_data(form_data, schema, id_prefix, errors, required=False):
         return parse_calculatedquantity_form_data(form_data, schema, id_prefix, errors, required=required)
     elif schema.get('type') == 'quantity':
         return parse_quantity_form_data(form_data, schema, id_prefix, errors, required=required)
+    elif schema.get('type') == 'plotly_chart':
+        return parse_plotly_chart_form_data(form_data, schema, id_prefix, errors, required=required)
     elif schema.get('type') == 'tags':
         return parse_tags_form_data(form_data, schema, id_prefix, errors, required=required)
     elif schema.get('type') == 'hazards':
@@ -262,7 +264,20 @@ def parse_calculatedquantity_form_data(form_data, schema, id_prefix, errors, req
         'dimensionality': dimensionality,
         'units': units
     }
-    #schemas.validate(data, schema)
+    # schemas.validate(data, schema)
+    return data
+
+def parse_plotly_chart_form_data(form_data, schema, id_prefix, errors, required=False):
+    plotly_chart_json_string = form_data.get(id_prefix + '__plotly_chart', [None])[0]
+
+    if plotly_chart_json_string is None and not required:
+        return None
+    data = {
+        '_type': 'plotly_chart',
+        'plotly_chart_json_string': str(plotly_chart_json_string)
+    }
+    schemas.validate(data, schema)
+
     return data
 
 

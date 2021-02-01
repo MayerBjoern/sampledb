@@ -52,6 +52,8 @@ def validate_schema(schema: dict, path: typing.Optional[typing.List[str]] = None
         return _validate_quantity_schema(schema, path)
     elif schema['type'] == 'calculatedquantity':
         return _validate_calculatedquantity_schema(schema, path)
+    elif schema['type'] == 'plotly_chart':
+        return _validate_plotly_chart_schema(schema, path)
     elif schema['type'] == 'sample':
         return _validate_sample_schema(schema, path)
     elif schema['type'] == 'measurement':
@@ -419,6 +421,22 @@ def _validate_calculatedquantity_schema(schema: dict, path: typing.List[str]) ->
         raise ValidationError('dataverse_export must be True or False', path)
     if 'note' in schema and not isinstance(schema['note'], str):
         raise ValidationError('note must be str', path)
+
+def _validate_plotly_chart_schema(schema: dict, path: typing.List[str]) -> None:
+    """
+    Validates the given plotly_chart object schema and raises a ValidationError if it is invalid.
+
+    :param schema: the sampledb object schema
+    :param path: the path to this subschema
+    :raise ValidationError: if the schema is invalid.
+    """
+    valid_keys = {'type', 'title', 'plotly_chart_json_string'}
+    schema_keys = set(schema.keys())
+    invalid_keys = schema_keys - valid_keys
+    if invalid_keys:
+        raise ValidationError('unexpected keys in schema: {}'.format(invalid_keys), path)
+
+
 
 
 def _validate_sample_schema(schema: dict, path: typing.List[str]) -> None:
