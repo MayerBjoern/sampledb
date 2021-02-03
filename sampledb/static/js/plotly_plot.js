@@ -8,7 +8,7 @@ function plotlyPlot(json_string) {
     var plot_div = $('#plotly_plot_div');
     var plot_info_link = $('#plot_info_link');
     if(/display:none/.test(plot_div.attr('style'))) {
-        plot_div.attr('style', 'height:400px')
+        plot_div.attr('style', 'height:40vh')
         plot_info_link.html('less infos')
         plot(json_string);
     } else {
