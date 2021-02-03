@@ -5,18 +5,13 @@
     {% else %}
     <a href="{{ url_for('.objects', q=search_query_attribute + ' == ""', advanced='on') }}" class="search-helper"><i class="fa fa-search" aria-hidden="true"></i></a>
     {% endif %}</label>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="{{ url_for('static', filename='js/plotly_plot.js') }}"></script>
     <div class="col-md-9">
          {% if data.plotly_chart_json_string %}
-            <a onclick="openPlotlyChart()">more infos</a>
+            <a id="plot_info_link" onclick="plotlyPlot({{ data.plotly_chart_json_string }})">more infos</a>
          {% else %}
          {% endif %}
     </div>
+    <div class="col-md-9" id="plotly_plot_div" style="display:none"></div>
 </div>
-
-<script>
-
-    function openPlotlyChart(){
-        var plotWindow = window.open("","","");
-        plotWindow.document.write();
-    }
-</script>
