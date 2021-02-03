@@ -8,7 +8,7 @@ function plotlyPlot(json_string) {
     var plot_div = $('#plotly_plot_div');
     var plot_info_link = $('#plot_info_link');
     if(/display:none/.test(plot_div.attr('style'))) {
-        plot_div.attr('style', 'height:400pt')
+        plot_div.attr('style', 'height:400px')
         plot_info_link.html('less infos')
         plot(json_string);
     } else {
@@ -22,8 +22,6 @@ function plotlyPlot(json_string) {
  * Help function of plotlyPlot
  * The function gets an JSON-String and plots the different data to a div.
  * The different data for the plots is given as keys in the JSON-String so that it can be chosen.
- * The data for the plots must have keys like plot0, plot1, ....
- * plot0 must be part of the JSON-String
  * @param json_string
  */
 function plot(json_string) {
