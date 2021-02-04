@@ -9,11 +9,11 @@ function plotlyPlot(json_string) {
     var plot_info_link = $('#plot_info_link');
     if(/display:none/.test(plot_div.attr('style'))) {
         plot_div.attr('style', 'height:40vh')
-        plot_info_link.html('less infos')
+        plot_info_link.html('less info')
         plot(json_string);
     } else {
         plot_div.attr('style', 'display:none');
-        plot_info_link.html('more infos')
+        plot_info_link.html('more info')
     }
 
 }
