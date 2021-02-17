@@ -9,7 +9,7 @@
     <script src="{{ url_for('static', filename='js/plotly_plot.js') }}"></script>
     <div class="col-md-9">
          {% if data.plotly_chart_json_string %}
-            <a id="plot_info_link" onclick="plotlyPlot({{ data.plotly_chart_json_string }})">more infos</a>
+            <a id="plot_info_link" onclick="plotlyPlot({{ data.plotly_chart_json_string }})">more info</a>
          {% else %}
          {% endif %}
     </div>

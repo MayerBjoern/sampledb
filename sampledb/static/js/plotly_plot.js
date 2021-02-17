@@ -28,6 +28,9 @@ function plot(json_string) {
     var json_string_key_list = Object.keys(json_string);
     Plotly.newPlot('plotly_plot_div');
     for(var i in json_string_key_list) {
-        Plotly.plot('plotly_plot_div', {data: [json_string[json_string_key_list[i]]], layout: {barmode: 'stack'}});
+        var json_data = json_string[json_string_key_list[i]]
+        var layout = json_data['layout']
+        console.log(layout)
+        Plotly.plot('plotly_plot_div', {data: [json_string[json_string_key_list[i]]], layout: {barmode: 'stack'  }});
     }
 }
