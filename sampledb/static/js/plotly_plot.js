@@ -5,9 +5,7 @@
  * @param json_string
  */
 function plotlyPlot(json_string, div_id) {
-    console.log(div_id);
     var plot_div = $('#plotly_plot_div_'+div_id);
-    console.log(plot_div.attr('style'));
     var plot_info_link = $('#plot_info_link_' + div_id);
     if(/display:none/.test(plot_div.attr('style'))) {
         plot_div.attr('style', 'height:40vh')
