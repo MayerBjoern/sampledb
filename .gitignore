@@ -11,3 +11,4 @@ docs/static/img/generated
 version.txt
 pgdata/
 files/
+local.py
