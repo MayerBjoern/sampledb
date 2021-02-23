@@ -248,14 +248,17 @@ def parse_quantity_form_data(form_data, schema, id_prefix, errors, required=Fals
 @form_data_parser
 def parse_compound_form_data(form_data, schema, id_prefix, errors, required=False):
     keys = [key for key in form_data.keys() if key.startswith(id_prefix + '__')]
-    if keys != [id_prefix + '__compound']:
-        raise ValueError('invalid text form data')
-    text = form_data.get(id_prefix + '__compound', [None])[0]
-    if text is None and not required:
+    if set(keys) != {id_prefix + '__inchi', id_prefix + '__name'}:
+        raise ValueError('invalid compound form data')
+
+    inchi = form_data.get(id_prefix + '__inchi', [None])[0]
+    name = form_data.get(id_prefix + '__name', [None])[0]
+    if inchi is None and name is None and not required:
         return None
     data = {
         '_type': 'compound',
-        'smile': str(text)
+        'inchi': str(inchi),
+        'name': str(name)
     }
     schemas.validate(data, schema)
     return data

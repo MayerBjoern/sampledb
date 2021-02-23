@@ -1,7 +1,9 @@
-<div class="form-group row{% if id_prefix+'_compound' in errors %} has-error{% elif id_prefix+'_compound' in form_data %} has-success{% endif %}" style="padding-right:0.75em">
+<div class="form-group row{% if id_prefix+'_inchi' in errors or id_prefix+'_name' in errors %} has-error{% elif id_prefix+'_inchi' in form_data or id_prefix+'_name' in form_data %} has-success{% endif %}" style="padding-right:0.75em">
   <label class="control-label col-md-3">{{ schema.title }}</label>
   <div class="col-md-9">
-      <input type="compound" class="form-control" name="{{ id_prefix }}_compound" placeholder="{{ schema.placeholder or schema.title }}" value="{{ data.smile }}">
+      <input type="text" class="form-control" name="{{ id_prefix }}_inchi" placeholder="InChI/SMILES" {% if id_prefix+'_inchi' in form_data %}value="{{ form_data[id_prefix+'_inchi'] }}"{% elif data is not none and "inchi" in data %}value="{{ data.inchi }}"{% endif %}>
+      or
+      <input type="text" class="form-control" name="{{ id_prefix }}_name" placeholder="Name" {% if id_prefix+'_name' in form_data %}value="{{ form_data[id_prefix+'_name'] }}"{% elif data is not none and "name" in data %}value="{{ data.name }}"{% endif %}>
     {% if 'note' in schema %}<span class="help-block"><strong>Note:</strong> {{ schema['note'] }}</span>{% endif %}
   </div>
 </div>

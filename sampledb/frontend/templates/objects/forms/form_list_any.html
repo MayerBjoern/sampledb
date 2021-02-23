@@ -18,6 +18,8 @@
   {% include "objects/forms/form_list_user.html" %}
 {% elif schema.type == 'plotly_chart' %}
     {% include "objects/forms/form_list_plotly_chart.html" %}
+{% elif schema.type == 'compound' %}
+  {% include "objects/forms/form_list_compound.html" %}
 {% else %}
   {{ name }}{{ schema.type }}{{ schema['type'] }}
 {% endif %}

@@ -665,6 +665,7 @@ $(function() {
            }
         }
       }
+
       schema['properties'][real_path[real_path.length-1]] = property_schema;
 
       input_schema.text(JSON.stringify(schema, null, 4));
@@ -851,6 +852,56 @@ $(function() {
       var schema = JSON.parse(input_schema.text());
       var property_schema = schema['properties'][real_path[real_path.length-1]];
       property_schema["type"] = "datetime";
+
+      updateSpecificProperty(path, real_path, schema, property_schema, has_error);
+    }
+
+    function updateCompoundProperty(path, real_path) {
+      var has_error = false;
+      updateGenericProperty(path, real_path);
+      var schema = JSON.parse(input_schema.text());
+      var property_schema = schema['properties'][real_path[real_path.length-1]];
+      property_schema["type"] = "compound";
+
+      var defaultids = ['inchi', 'name'];
+      for (i = 0; i < defaultids.length; i++) {
+          var has_default = $('#schema-editor-object__' + path.join('__') + '-compound-default' + defaultids[i] + '-checkbox').prop('checked');
+          var default_input = $('#schema-editor-object__' + path.join('__') + '-compound-default' + defaultids[i] + '-input');
+          var default_value = default_input.val();
+          var default_group = default_input.parent();
+          var default_help = default_group.find('.help-block');
+
+          if (has_default) {
+            if (default_value === null || default_value === "") {
+              default_help.text("Please enter a default value.");
+              default_group.addClass("has-error");
+              has_error = true;
+            } else {
+              default_help.text("");
+              default_group.removeClass("has-error");
+              property_schema['default'+defaultids[i]] = default_value;
+              alert('default'+defaultids[i]);
+              alert(property_schema['default'+defaultids[i]]);
+            }
+          } else {
+            default_help.text("");
+            default_group.removeClass("has-error");
+          }
+      }
+
+      var displaytemplate_input = $('#schema-editor-object__' + path.join('__') + '-compound-displaytemplate-input');
+      var displaytemplate_group = displaytemplate_input.parent();
+      var displaytemplate_help = displaytemplate_group.find('.help-block');
+      var displaytemplate = displaytemplate_input.val();
+      if (displaytemplate === "") {
+        displaytemplate_help.text("Display Template must not be empty.");
+        displaytemplate_group.addClass("has-error");
+        has_error = true;
+      } else {
+        displaytemplate_help.text("");
+        displaytemplate_group.removeClass("has-error");
+        property_schema["displaytemplate"] = displaytemplate;
+      }
 
       updateSpecificProperty(path, real_path, schema, property_schema, has_error);
     }
@@ -1062,6 +1113,18 @@ $(function() {
     setupValueFromSchema(path, 'text', 'maxLength', schema, type === 'text');
 
     setupValueFromSchema(path, 'choice', 'default', schema, type === 'choice');
+
+    setupValueFromSchema(path, 'compound', 'defaultinchi', schema, type === 'compound');
+    setupValueFromSchema(path, 'compound', 'defaultname', schema, type === 'compound');
+
+    var displaytemplate_label = node.find('.schema-editor-compound-property-displaytemplate-label');
+    var displaytemplate_input = node.find('.schema-editor-compound-property-displaytemplate-input');
+    displaytemplate_input.attr('id', 'schema-editor-object__' + path.join('__') + '-compound-displaytemplate-input');
+    displaytemplate_label.attr('for', displaytemplate_input.attr('id'));
+    if (type === 'compound' && 'displaytemplate' in schema) {
+        displaytemplate_input.val(schema['displaytemplate']);
+    }
+    displaytemplate_input.on('change', updateProperty.bind(path));
 
     var choices_label = node.find('.schema-editor-choice-property-choices-label');
     var choices_input = node.find('.schema-editor-choice-property-choices-input');

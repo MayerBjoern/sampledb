@@ -376,9 +376,10 @@ def _validate_quantity(instance: dict, schema: dict, path: typing.List[str]) -> 
     if str(quantity_magnitude.dimensionality) != instance['dimensionality']:
         raise ValidationError('Invalid dimensionality, expected "{}"'.format(str(schema_quantity.dimensionality)), path)
 
+
 def _validate_compound(instance: dict, schema: dict, path: typing.List[str]) -> None:
     """
-    Validates the given instance using the given quantity object schema and raises a ValidationError if it is invalid.
+    Validates the given instance using the given compound object schema and raises a ValidationError if it is invalid.
 
     :param instance: the sampledb object
     :param schema: the valid sampledb object schema
@@ -387,23 +388,42 @@ def _validate_compound(instance: dict, schema: dict, path: typing.List[str]) -> 
     """
     if not isinstance(instance, dict):
         raise ValidationError('instance must be dict', path)
-    valid_keys = {'_type', 'smile'}
-    required_keys = {'_type', 'smile'}
+    valid_keys = {'_type', 'name', 'smiles', 'inchi', 'cid'}
+    # at least one of the following keys is required
+    required_keys = {'name', 'smiles', 'inchi', 'cid'}
     schema_keys = set(instance.keys())
     invalid_keys = schema_keys - valid_keys
     if invalid_keys:
         raise ValidationError('unexpected keys in schema: {}'.format(invalid_keys), path)
-    missing_keys = required_keys - schema_keys
-    if missing_keys:
-        raise ValidationError('missing keys in schema: {}'.format(missing_keys), path)
     if instance['_type'] != 'compound':
         raise ValidationError('expected _type "compound"', path)
-    if not isinstance(instance['smile'], str):
-        raise ValidationError('Smile-String must be str', path)
+
+    if len(required_keys.intersection(instance)) == 0:
+        raise ValidationError('At least one of the following keys has to be given: {}'.format(required_keys), path)
+
+    if "cid" in instance and not isinstance(instance['cid'], int):
+        raise ValidationError('cid can only be a number', path)
+    if "inchi" in instance:
+        if not isinstance(instance['inchi'], str):
+            raise ValidationError('InChI-Value must be str', path)
+        if len(instance['inchi']) > 0 and not instance['inchi'].startswith('InChI='):
+            instance['smiles'] = instance['inchi']
+            instance['inchi'] = None
+    if "smiles" in instance and not isinstance(instance['smiles'], str):
+        raise ValidationError('SMILES-Value must be str', path)
+    if "name" in instance and not isinstance(instance['name'], str):
+        raise ValidationError('Compound name has to be str', path)
+
     try:
-        compound = datatypes.Compound(instance['smile'])
+        compound = datatypes.Compound(cid=instance['cid'] if 'cid' in instance else None,
+                                      inchi=instance['inchi'] if 'inchi' in instance else None,
+                                      smiles=instance['smiles'] if 'smiles' in instance else None,
+                                      name=instance['name'] if 'name' in instance else None)
     except Exception:
         raise ValidationError('Unable to create compound', path)
+
+    instance.update(compound.to_json())
+
 
 def _validate_sample(instance: dict, schema: dict, path: typing.List[str]) -> None:
     """

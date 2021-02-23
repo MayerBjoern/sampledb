@@ -1414,4 +1414,19 @@
       });
     });
   </script>
+  <script src="{{ url_for('static', filename='js/smiles-drawer.min.js') }}"></script>
+  <script type="text/javascript">
+    $( document ).ready(function() {
+      var i = 0;
+      $("canvas[name='smilesdrawer']").each(function() {
+        i++;
+        $( this ).attr( "id", "sd"+i )
+        var smiles = $( this ).attr( "data-smiles" )
+        var drawer = new SmilesDrawer.Drawer({width: $( this ).width(), height: $( this ).height()});
+        SmilesDrawer.parse($( this ).attr( "data-smiles" ), function (tree) {
+          drawer.draw(tree, "sd"+i, 'light', false);
+        });
+      });
+    });
+  </script>
 {% endblock %}

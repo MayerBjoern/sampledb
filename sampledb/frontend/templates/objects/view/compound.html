@@ -1,28 +1,48 @@
 <div class="row" style="padding-right:0.75em">
-    <label class="col-md-3" style="text-align: right">{{ schema.title }}  </label>
-  {{ data.smile }}
-    <a id="smile-more-details-link-{{ schema.smile }}" onClick="smileClick()">more details</a>
-    <div id="detailed-view-{{ schema.smile }}" style="visibility:hidden">
-        <canvas id="canvas-{{ data.smile }}" width="400" height="40"></canvas>
+    <label class="col-md-3" style="text-align: right">{{ schema.title }}
+    {% if data is not none %}
+        {% if data.inchi %}
+            <a href="{{ url_for('.objects', q=search_query_attribute + ' == "' + data.inchi + '"', advanced='on') }}" class="search-helper"><i class="fa fa-search" aria-hidden="true"></i></a>
+        {% else %}
+            <a href="{{ url_for('.objects', q=search_query_attribute + ' == "' + data.smiles + '"', advanced='on') }}" class="search-helper"><i class="fa fa-search" aria-hidden="true"></i></a>
+        {% endif %}
+    {% else %}
+    {% endif %}
+    </label>
+{% if schema.displaytemplate == "name" %}
+    <div class="col-md-9">
+    {% if data.name %}
+        {{ data.name }} ({{ data.inchi }}) ({{ data.smiles }})
+    {% else %}
+        &mdash;
+    {% endif %}
     </div>
-  {#</div>#}
+{% elif schema.displaytemplate == "inchi" %}
+    <div class="col-md-9">
+    {% if data.inchi %}
+        {{ data.inchi }}
+    {% else %}
+        &mdash;
+    {% endif %}
+    </div>
+{% elif schema.displaytemplate == "smiles" %}
+    <div class="col-md-9">
+    {% if data.smiles %}
+        {{ data.smiles }}
+    {% else %}
+        &mdash;
+    {% endif %}
+    </div>
+{% elif schema.displaytemplate == "2dstruct" %}
+    <div class="col-md-9" style="text-align: center">
+        <canvas name="smilesdrawer" data-smiles="{{ data.smiles }}" style="width: 100%; height: 300px; display: block;"></canvas>
+        {% if data.cid %}
+            <a target="_blank" href="https://pubchem.ncbi.nlm.nih.gov/compound/{{ data.cid }}">
+        {% endif %}
+        {{ data.name }}
+        {% if data.cid %}
+            </a>
+        {% endif %}
+    </div>
+{% endif %}
 </div>
- <script src="https://unpkg.com/smiles-drawer@1.0.10/dist/smiles-drawer.min.js"></script>
-<script>
-     let input = "{{ data.smile }}";
-        let drawer = new SmilesDrawer.Drawer({width: 400, height: 100});
-        SmilesDrawer.parse(input, function (tree) {
-            drawer.draw(tree, 'canvas-{{ data.smile }}', 'light', false);
-        });
-    function smileClick() {
-        if($('#detailed-view-{{ schema.smile }}').attr('style') == 'visibility:visible') {
-            $('#detailed-view-{{ schema.smile }}').attr('style', 'visibility:hidden');
-            $('#smile-more-details-link-{{ schema.smile }}').html('more details');
-         }
-        else {
-            $('#detailed-view-{{ schema.smile }}').attr('style', 'visibility:visible');
-            $('#smile-more-details-link-{{ schema.smile }}').html('less details');
-        }
-       // $('#detailed-view-{{ schema.smile }}').attr('style', 'visibility:visible');
-    }
-</script>

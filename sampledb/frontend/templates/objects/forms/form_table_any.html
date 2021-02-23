@@ -18,6 +18,8 @@
   {% include "objects/forms/form_table_object_reference.html" %}
 {%  elif schema['type'] == 'plotly_chart' %}
   {% include "objects/forms/form_table_plotly_chart.html" %}
+{% elif schema['type'] == 'compound' %}
+  {% include "objects/forms/form_table_compound.html" %}
 {#{% elif schema.type == 'object' %}#}
 {#  {% include "form_object.html" %}#}
 {#{% elif schema.type == 'array' %}#}

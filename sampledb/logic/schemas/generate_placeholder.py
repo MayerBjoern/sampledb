@@ -35,8 +35,6 @@ def generate_placeholder(schema: dict, path: typing.Optional[typing.List[str]] =
         return _generate_bool_placeholder(schema, path)
     elif schema['type'] == 'quantity':
         return _generate_quantity_placeholder(schema, path)
-    elif schema['type'] == 'calculatedquantity':
-        return _generate_calculatedquantity_placeholder(schema, path)
     elif schema['type'] == 'compound':
         return _generate_compound_placeholder(schema, path)
     elif schema['type'] == 'sample':
@@ -203,17 +201,6 @@ def _generate_quantity_placeholder(schema: dict, path: typing.List[str]) -> typi
     }
 
 
-def _generate_calculatedquantity_placeholder(schema: dict, path: typing.List[str]) -> typing.Union[dict, None]:
-    """
-    Generates a placeholder quantity object based on an object schema.
-
-    :param schema: the sampledb object schema
-    :param path: the path to this subschema
-    :return: the generated object or None, if there is no default magnitude (in base units)
-    :raise SchemaError: if the units are invalid
-    """
-    return None
-
 def _generate_compound_placeholder(schema: dict, path: typing.List[str]) -> typing.Union[dict, None]:
     """
     Generates a placeholder quantity object based on an object schema.
@@ -223,8 +210,18 @@ def _generate_compound_placeholder(schema: dict, path: typing.List[str]) -> typi
     :return: the generated object or None, if there is no default magnitude (in base units)
     :raise SchemaError: if the units are invalid
     """
-    return None
+    inchi = ""
+    name = ""
+    if 'defaultinchi' in schema:
+        inchi = schema['defaultinchi']
+    if 'defaultname' in schema:
+        name = schema['defaultname']
 
+    return {
+        '_type': 'compound',
+        'inchi': inchi,
+        'name': name
+    }
 
 
 def _generate_sample_placeholder(schema: dict, path: typing.List[str]) -> None:

@@ -16,6 +16,8 @@
   {% include "objects/view/list_user.html" %}
 {% elif schema.type == 'plotly_chart' %}
   {% include "objects/view/list_plotly_chart.html" %}
+{% elif schema.type == 'compound' %}
+  {% include "objects/view/list_compound.html" %}
 {% else %}
   {{ name }}{{ schema.type }}{{ schema['type'] }}
 {% endif %}
