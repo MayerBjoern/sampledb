@@ -316,10 +316,12 @@ $(function() {
       return null;
     } else if (schema['type'] === 'user') {
       type = "user";
-    } else if (schema['type'] === 'compound') {
-      type = "compound";
     } else if (schema['type'] === 'plotly_chart') {
       type = "plotly_chart";
+    } else if (schema['type'] === 'compound') {
+      type = "compound";
+    } else if ((schema['type'] === 'array') && (schema['style'] === 'reaction')) {
+      type = "reaction";
     } else {
       window.schema_editor_missing_type_support = true;
       return null;
@@ -358,10 +360,12 @@ $(function() {
         updateCalculatedQuantityProperty(path, real_path);
       } else if (type === "datetime") {
         updateDatetimeProperty(path, real_path);
-      } else if (type === "compound") {
-        updateCompoundProperty(path, real_path);
       } else if (type === "plotly_chart") {
         updatePlotlyChartProperty(path, real_path);
+      } else if (type === "compound") {
+        updateCompoundProperty(path, real_path);
+      } else if (type === "reaction") {
+        updateReactionProperty(path, real_path);
       }
       globallyValidateSchema();
     }
@@ -905,6 +909,68 @@ $(function() {
 
       updateSpecificProperty(path, real_path, schema, property_schema, has_error);
     }
+
+
+    function updateReactionProperty(path, real_path) {
+      var has_error = false;
+      updateGenericProperty(path, real_path);
+      var schema = JSON.parse(input_schema.text());
+      var property_schema = schema['properties'][real_path[real_path.length-1]];
+      parsed_title = property_schema["title"];
+
+      property_schema = {
+          "title": parsed_title,
+          "type": "array",
+          "style": "reaction",
+          "minItems": 0,
+          "items": {
+            "title": "Reaction step",
+            "type": "object",
+            "properties": {
+              "precursors": {
+                "title": "Precursors",
+                "type": "array",
+                "style": "list",
+                "minItems": 1,
+                "items": {
+                  "title": "Compound",
+                  "type": "compound",
+                  "displaytemplate": "2dstruct"
+                }
+              },
+              "conditions": {
+                "title": "Reaction conditions",
+                "type": "array",
+                "style": "list",
+                "minItems": 0,
+                "items": {
+                  "title": "Condition",
+                  "type": "text"
+                }
+              },
+              "products": {
+                "title": "Products",
+                "type": "array",
+                "style": "list",
+                "minItems": 1,
+                "items": {
+                  "title": "Compound",
+                  "type": "compound",
+                  "displaytemplate": "2dstruct"
+                }
+              }
+            },
+            "propertyOrder": [
+              "precursors",
+              "conditions",
+              "products"
+            ]
+          }
+      };
+
+      updateSpecificProperty(path, real_path, schema, property_schema, has_error);
+    }
+
 
     function updateQuantityProperty(path, real_path) {
       var has_error = false;
