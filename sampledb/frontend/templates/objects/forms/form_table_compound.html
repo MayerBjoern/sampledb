@@ -1,0 +1,6 @@
+<div class="form-group{% if id_prefix+'_text' in errors %} has-error{% elif id_prefix+'_text' in form_data %} has-success{% endif %}" style="padding-right:0.75em; flex-grow: 1">
+      <input type="text" class="form-control" style="display: inline; width: 47%;" name="{{ id_prefix }}_inchi" placeholder="InChI/SMILES" {% if id_prefix+'_inchi' in form_data %}value="{{ form_data[id_prefix+'_inchi'] }}"{% elif data is not none and "inchi" in data %}value="{{ data.inchi }}"{% endif %}">
+      or
+      <input type="text" class="form-control" style="display: inline; width: 47%;" name="{{ id_prefix }}_name" placeholder="Name" {% if id_prefix+'_name' in form_data %}value="{{ form_data[id_prefix+'_name'] }}"{% elif data is not none and "name" in data %}value="{{ data.name }}"{% endif %}>
+    {% if id_prefix+'_text' in object_errors %}<span class="help-block"><strong>Error:</strong> {{ object_errors[id_prefix+'_text'] }}</span>{% endif %}
+</div>
