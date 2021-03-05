@@ -6,7 +6,6 @@ _*
 !__init__.py
 !__main__.py
 ldapaccount.py
-local.py
 docs/static/img/generated
 version.txt
 pgdata/
