@@ -309,49 +309,41 @@
     </tbody>
     {% endfor %}
   </table>
-    {% endif %}
-    <!--
-    {% if data is not none %}
-      {% for item in data %}
-        {% set name = "item" %}
-        {% set schema = schema['items'] %}
-        {% set data = item %}
-        {% set entry_index = loop.index0 %}
-        <tr>
-        {% for property_name in property_order %}
-          {% if property_name in item_property_names %}
-          <td>
-            {% set name = property_name %}
-            {% set schema = schema.properties[property_name] %}
-            {% if data is not none and property_name in data %}
-            {% set data = data[property_name] %}
-            {% else %}
-            {% set data = none %}
-            {% endif %}
-            {% set search_query_attribute = base_search_query_attribute + ".%d.%s" | format(entry_index, name) %}
-            {% include "objects/view/table_any.html" %}
-          </td>
+  <div style="display: flex; flex-wrap: nowrap;">
+    {% for item in data %}
+    <div style="display: flex; justify-content: center; align-items: center; flex: 4 4 40%; overflow-x: scroll; flex-wrap: nowrap;">
+        {% for precursor in item.precursors %}
+          {% set schema = schema["items"]["properties"]["precursors"]["items"] %}
+          {% set data = precursor %}
+          {% if not loop.first %}
+            <span class="plus">+</span>
           {% endif %}
+          <div style="display: inline-block; width: {{ (100 - (7*(loop.length-1))) / loop.length }}%; min-width: 150px;">
+          {% include "objects/view/table_compound.html" %}
+          </div>
         {% endfor %}
-        {% for property_name in item_property_names %}
-          {% if property_name not in property_order %}
-          <td>
-            {% set name = property_name %}
-            {% set schema = schema.properties[property_name] %}
-            {% if data is not none and property_name in data %}
-            {% set data = data[property_name] %}
-            {% else %}
-            {% set data = none %}
-            {% endif %}
-            {% set search_query_attribute = base_search_query_attribute + ".%d.%s" | format(entry_index, name) %}
-            {% include "objects/view/table_any.html" %}
-          </td>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; flex: 2 2 20%; overflow: scroll; flex-direction: column;">
+        {% for condition in item.conditions %}
+        {{ condition.text }}
+        {% endfor %}
+        <img src="{{ url_for('static', filename='img/arrow-right.png') }}" alt="reaction arrow" style="width: 80%;" />
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; flex: 4 4 40%; overflow-x: scroll; flex-wrap: nowrap;">
+        {% for product in item.products %}
+          {% set schema = schema["items"]["properties"]["products"]["items"] %}
+          {% set data = product %}
+          {% if not loop.first %}
+            <span class="plus">+</span>
           {% endif %}
+          <div style="display: inline-block; width: {{ (100 - (7*(loop.length-1))) / loop.length }}%; min-width: 150px;">
+          {% include "objects/view/table_compound.html" %}
+          </div>
         {% endfor %}
-        </tr>
-      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
     {% endif %}
-    -->
   {% endif %}
 </div>
 {% else %}
