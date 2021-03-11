@@ -12,7 +12,13 @@
 {% if schema.displaytemplate == "name" %}
     <div class="col-md-9">
     {% if data.name %}
-        {{ data.name }} ({{ data.inchi }}) ({{ data.smiles }})
+        {% if data.cid %}
+            <a target="_blank" href="https://pubchem.ncbi.nlm.nih.gov/compound/{{ data.cid }}">
+        {% endif %}
+            {{ data.name }}
+        {% if data.cid %}
+            </a>
+        {% endif %}
     {% else %}
         &mdash;
     {% endif %}

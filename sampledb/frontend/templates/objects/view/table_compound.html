@@ -1,13 +1,5 @@
 {% if data is not none %}
   {% if schema.displaytemplate == "name" %}
-    {{ data.name }}
-  {% elif schema.displaytemplate == "inchi" %}
-    {{ data.inchi }}
-  {% elif schema.displaytemplate == "smiles" %}
-    {{ data.smiles }}
-  {% elif schema.displaytemplate == "2dstruct" %}
-    <div class="listcompound">
-    <canvas name="smilesdrawer" data-smiles="{{ data.smiles }}"></canvas>
     {% if data.cid %}
         <a target="_blank" href="https://pubchem.ncbi.nlm.nih.gov/compound/{{ data.cid }}">
     {% endif %}
@@ -15,7 +7,18 @@
     {% if data.cid %}
         </a>
     {% endif %}
-    </div>
+  {% elif schema.displaytemplate == "inchi" %}
+    {{ data.inchi }}
+  {% elif schema.displaytemplate == "smiles" %}
+    {{ data.smiles }}
+  {% elif schema.displaytemplate == "2dstruct" %}
+    {% if data.cid %}
+        <a target="_blank" href="https://pubchem.ncbi.nlm.nih.gov/compound/{{ data.cid }}">
+    {% endif %}
+    {{ data.name }}
+    {% if data.cid %}
+        </a>
+    {% endif %}
   {% endif %}
 {% else %}
   &mdash;

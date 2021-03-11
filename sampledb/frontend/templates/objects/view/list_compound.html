@@ -1,6 +1,12 @@
 {% if data is not none %}
   {% if schema.displaytemplate == "name" %}
+    {% if data.cid %}
+        <a target="_blank" href="https://pubchem.ncbi.nlm.nih.gov/compound/{{ data.cid }}">
+    {% endif %}
     {{ data.name }}
+    {% if data.cid %}
+        </a>
+    {% endif %}
   {% elif schema.displaytemplate == "inchi" %}
     {{ data.inchi }}
   {% elif schema.displaytemplate == "smiles" %}
@@ -15,6 +21,7 @@
     {% if data.cid %}
         </a>
     {% endif %}
+    </div>
   {% endif %}
 {% else %}
   &mdash;

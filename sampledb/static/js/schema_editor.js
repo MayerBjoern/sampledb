@@ -356,8 +356,6 @@ $(function() {
         updateObjectReferenceProperty(path, real_path);
       } else if (type === "quantity") {
         updateQuantityProperty(path, real_path);
-      } else if (type === "calculatedquantity") {
-        updateCalculatedQuantityProperty(path, real_path);
       } else if (type === "datetime") {
         updateDatetimeProperty(path, real_path);
       } else if (type === "plotly_chart") {
@@ -941,11 +939,27 @@ $(function() {
               "conditions": {
                 "title": "Reaction conditions",
                 "type": "array",
-                "style": "list",
                 "minItems": 0,
                 "items": {
-                  "title": "Condition",
-                  "type": "text"
+                  "title": "Reaction condition",
+                  "type": "object",
+                  "properties": {
+                    "condition": {
+                      "title": "Condition",
+                      "type": "text"
+                    },
+                    "type": {
+                      "title": "Type",
+                      "type": "text",
+                      "choices": ["Catalyst", "Pressure", "Solvent", "Temperature", "Other"],
+                      "default": "Catalyst"
+                    }
+
+                  },
+                  "propertyOrder": [
+                    "type",
+                    "condition"
+                  ]
                 }
               },
               "products": {
@@ -1024,56 +1038,6 @@ $(function() {
       }
 
       updateSpecificProperty(path, real_path, schema, property_schema, has_error);
-    }
-
-    function updateCalculatedQuantityProperty(path, real_path) {
-      var has_error = false;
-      updateGenericProperty(path, real_path);
-      var schema = JSON.parse(input_schema.text());
-      var property_schema = schema['properties'][real_path[real_path.length-1]];
-      property_schema["type"] = "calculatedquantity";
-      property_schema["formula"] = $('#schema-editor-object__' + path.join('__') + '-quantity-formula-input');
-
-      var units_input = $('#schema-editor-object__' + path.join('__') + '-calculatedquantity-units-input');
-      var units = units_input.val();
-      var units_group = units_input.parent();
-      var units_help = units_group.find('.help-block');
-      // TODO: validate units
-      if (units.length > 0) {
-        property_schema['units'] = units;
-        units_help.text("");
-        units_group.removeClass("has-error");
-      } else {
-        property_schema['units'] = "1";
-      }
-
-      var formula_input = $('#schema-editor-object__' + path.join('__') + '-calculatedquantity-formula-input');
-      var formula_value = formula_input.val();
-      var default_group = formula_input.parent();
-      var default_help = default_group.find('.help-block');
-
-
-      var test_formula = "\(" + formula_value + "\)";
-      while(/\(.*?\)/.test(test_formula)) {
-        var match = test_formula.match(/\(.[^\(\)]*?\)/)[0];
-        test_formula = test_formula.replace(match, "");
-      }
-      if(test_formula != "") {
-        formula_help.text("Please enter valid formula");
-        formula_group.addClass("has-error");
-        has_error = true;
-      } else {
-      }
-      property_schema["formula"] = formula_value;
-
-      schema['properties'][real_path[real_path.length - 1]] = property_schema;
-      input_schema.text(JSON.stringify(schema, null, 4));
-
-      window.schema_editor_errors[path.join('__') + '__specific'] = true;
-      if (!has_error) {
-        delete window.schema_editor_errors[path.join('__') + '__specific'];
-      }
-      $('button[name="action_submit"]').prop('disabled', (JSON.stringify(window.schema_editor_errors) !== '{}'));
     }
 
     function updateCompoundProperty(path, real_path) {

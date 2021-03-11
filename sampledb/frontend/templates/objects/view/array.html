@@ -264,80 +264,35 @@
 <div style="padding-left:2.5em;">
   {% if schema["items"]["type"] == 'object' %}
     {% if data is not none %}
-  <table class="table reaction">
+  <div class="reaction">
     {% for item in data %}
-    <thead>
-      <tr>
-        <th colspan="3">
-          {{ schema["items"]["title"] }} #{{ loop.index }}
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-      <td style="width: 40%;"><div class="scrollable">
+    <div class="precursor">
         {% for precursor in item.precursors %}
           {% set schema = schema["items"]["properties"]["precursors"]["items"] %}
           {% set data = precursor %}
           {% if not loop.first %}
-            <span class="plus">+</span>
+            <span>+</span>
           {% endif %}
           <div style="display: inline-block; width: {{ (100 - (7*(loop.length-1))) / loop.length }}%; min-width: 150px;">
-          {% include "objects/view/table_compound.html" %}
-          </div>
-        {% endfor %}
-      </div></td>
-      <td style="width: 18%;"><div class="scrollable">
-        {% for condition in item.conditions %}
-          {{ condition.text }}<br />
-        {% endfor %}
-        <img src="{{ url_for('static', filename='img/arrow-right.png') }}" alt="reaction arrow" style="width: 70%;" />
-      </div></td>
-      <td style="width: 40%;"><div class="scrollable">
-        {% for product in item.products %}
-          {% set schema = schema["items"]["properties"]["products"]["items"] %}
-          {% set data = product %}
-          {% if not loop.first %}
-            <span class="plus">+</span>
-          {% endif %}
-          <div style="display: inline-block; width: {{ (100 - (7*(loop.length-1))) / loop.length }}%; min-width: 150px;">
-          {% include "objects/view/table_compound.html" %}
-          </div>
-        {% endfor %}
-      </div></td>
-      </tr>
-    </tbody>
-    {% endfor %}
-  </table>
-  <div style="display: flex; flex-wrap: nowrap;">
-    {% for item in data %}
-    <div style="display: flex; justify-content: center; align-items: center; flex: 4 4 40%; overflow-x: scroll; flex-wrap: nowrap;">
-        {% for precursor in item.precursors %}
-          {% set schema = schema["items"]["properties"]["precursors"]["items"] %}
-          {% set data = precursor %}
-          {% if not loop.first %}
-            <span class="plus">+</span>
-          {% endif %}
-          <div style="display: inline-block; width: {{ (100 - (7*(loop.length-1))) / loop.length }}%; min-width: 150px;">
-          {% include "objects/view/table_compound.html" %}
+          {% include "objects/view/list_compound.html" %}
           </div>
         {% endfor %}
     </div>
-    <div style="display: flex; justify-content: center; align-items: center; flex: 2 2 20%; overflow: scroll; flex-direction: column;">
+    <div class="conditions">
         {% for condition in item.conditions %}
-        {{ condition.text }}
+        <div>{{ condition.condition.text }}</div>
         {% endfor %}
         <img src="{{ url_for('static', filename='img/arrow-right.png') }}" alt="reaction arrow" style="width: 80%;" />
     </div>
-    <div style="display: flex; justify-content: center; align-items: center; flex: 4 4 40%; overflow-x: scroll; flex-wrap: nowrap;">
+    <div class="products">
         {% for product in item.products %}
           {% set schema = schema["items"]["properties"]["products"]["items"] %}
           {% set data = product %}
           {% if not loop.first %}
-            <span class="plus">+</span>
+            <span>+</span>
           {% endif %}
           <div style="display: inline-block; width: {{ (100 - (7*(loop.length-1))) / loop.length }}%; min-width: 150px;">
-          {% include "objects/view/table_compound.html" %}
+          {% include "objects/view/list_compound.html" %}
           </div>
         {% endfor %}
     </div>

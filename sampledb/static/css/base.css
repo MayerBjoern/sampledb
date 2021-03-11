@@ -899,33 +899,29 @@ div.listcompound {
 }
 div.listcompound canvas {
     width: 100%;
-    height: 250px;
+    height: 200px;
     display: block;
 }
 .reaction {
+    display: flex;
+    flex-wrap: nowrap;
     width: 100%;
     table-layout: fixed;
 }
-.reaction tbody tr {
-    height: 270px;
+.reaction .conditions, .reaction .precursor, .reaction .products {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-.plus {
-    display: inline-block;
-    line-height: 270px;
-    vertical-align: top;
+.reaction .precursor, .reaction .products {
+    flex: 4 4 40%;
+    overflow-x: scroll;
+    flex-wrap: nowrap;
 }
-.reaction td {
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle !important;
-    border: 0px !important;
-}
-.reaction div.scrollable {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: auto;
+.reaction .conditions {
+    flex: 2 2 20%;
+    overflow: scroll;
+    flex-direction: column;
 }
 
 .button-row > button,
