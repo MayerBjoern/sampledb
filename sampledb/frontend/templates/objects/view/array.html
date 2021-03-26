@@ -264,8 +264,8 @@
 <div style="padding-left:2.5em;">
   {% if schema["items"]["type"] == 'object' %}
     {% if data is not none %}
-  <div class="reaction">
     {% for item in data %}
+    <div class="reaction">
     <div class="precursor">
         {% for precursor in item.precursors %}
           {% set schema = schema["items"]["properties"]["precursors"]["items"] %}
@@ -296,8 +296,8 @@
           </div>
         {% endfor %}
     </div>
+    </div>
     {% endfor %}
-  </div>
     {% endif %}
   {% endif %}
 </div>

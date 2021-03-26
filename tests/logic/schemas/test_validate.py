@@ -1812,3 +1812,141 @@ def test_validate_plotly_chart_invalid_type():
     with pytest.raises(ValidationError):
         validate(instance, schema)
 
+
+
+def test_validate_compound_invalid():
+    schema = {
+        'title': 'Example',
+        'type': 'compound',
+        'displaytemplate': '2dstruct'
+    }
+    instance = []
+    with pytest.raises(ValidationError):
+        validate(instance, schema)
+
+
+def test_validate_compound_missing_key():
+    schema = {
+        'title': 'Example',
+        'type': 'compound',
+        'displaytemplate': '2dstruct'
+    }
+    instance = {
+        '_type': 'compound',
+    }
+    with pytest.raises(ValidationError):
+        validate(instance, schema)
+
+
+def test_validate_compound_invalid_key():
+    schema = {
+        'title': 'Example',
+        'type': 'compound',
+        'displaytemplate': '2dstruct'
+    }
+    instance = {
+        '_type': 'compound',
+        'cid': 783,
+        'dummykey': True
+    }
+    with pytest.raises(ValidationError):
+        validate(instance, schema)
+
+
+def test_validate_compound_invalid_cid_type():
+    schema = {
+        'title': 'Example',
+        'type': 'compound',
+        'displaytemplate': '2dstruct'
+    }
+    instance = {
+        '_type': 'compound',
+        'cid': '783'
+    }
+    with pytest.raises(ValidationError):
+        validate(instance, schema)
+
+
+def test_validate_compound_invalid_name_type():
+    schema = {
+        'title': 'Example',
+        'type': 'compound',
+        'displaytemplate': '2dstruct'
+    }
+    instance = {
+        '_type': 'compound',
+        'name': 12
+    }
+    with pytest.raises(ValidationError):
+        validate(instance, schema)
+
+
+def test_validate_compound_invalid_smiles_type():
+    schema = {
+        'title': 'Example',
+        'type': 'compound',
+        'displaytemplate': '2dstruct'
+    }
+    instance = {
+        '_type': 'compound',
+        'smiles': 13
+    }
+    with pytest.raises(ValidationError):
+        validate(instance, schema)
+
+
+def test_validate_compound_invalid_inchi_type():
+    schema = {
+        'title': 'Example',
+        'type': 'compound',
+        'displaytemplate': '2dstruct'
+    }
+    instance = {
+        '_type': 'compound',
+        'inchi': 14
+    }
+    with pytest.raises(ValidationError):
+        validate(instance, schema)
+
+
+def test_validate_compound_non_existent_compound():
+    schema = {
+        'title': 'Example',
+        'type': 'compound',
+        'displaytemplate': '2dstruct'
+    }
+    instance = {
+        '_type': 'compound',
+        'name': 'Rhiemium'
+    }
+    with pytest.raises(ValidationError):
+        validate(instance, schema)
+
+
+def test_validate_compound():
+    schema = {
+        'title': 'Example',
+        'type': 'compound',
+        'displaytemplate': '2dstruct'
+    }
+    instance = {
+        '_type': 'compound',
+        'name': 'Water'
+    }
+    validate(instance, schema)
+
+
+def test_validate_compound_complete_data():
+    schema = {
+        'title': 'Example',
+        'type': 'compound',
+        'displaytemplate': '2dstruct'
+    }
+    instance = {
+        '_type': 'compound',
+        'cid': 783,
+        'name': 'Hydrogen',
+        'inchi': 'InChI=1S/H2/h1H',
+        'smiles': '[HH]'
+    }
+    validate(instance, schema)

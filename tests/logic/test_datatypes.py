@@ -374,3 +374,50 @@ def test_text_invalid_data():
     with pytest.raises(jsonschema.exceptions.ValidationError):
         jsonschema.validate(raw_data, schema)
 
+
+def test_compound_serialization():
+    s = json.dumps(datatypes.Compound(cid=None, inchi=None, smiles=None, name="Hydrogen"), cls=datatypes.JSONEncoder)
+    assert json.loads(s) == {
+        '_type': 'compound',
+        'name': 'Hydrogen',
+        'smiles': '[HH]',
+        'inchi': 'InChI=1S/H2/h1H',
+        'cid': 783
+    }
+
+
+def test_compound_deserialization():
+    s = json.dumps(datatypes.Compound(cid=None, inchi=None, smiles=None, name="Hydrogen"), cls=datatypes.JSONEncoder)
+    t = json.loads(s, object_hook=datatypes.JSONEncoder.object_hook)
+    assert t.smiles == "[HH]"
+
+
+def test_compound_equals():
+    assert datatypes.Compound(cid=None, inchi=None, smiles=None, name="Hydrogen") == datatypes.Compound(cid=None, inchi="InChI=1S/H2/h1H", smiles=None, name=None)
+    assert datatypes.Compound(cid=783, inchi=None, smiles=None, name=None) == datatypes.Compound(cid=None, inchi=None, smiles="[HH]", name=None)
+
+
+def test_compound_valid_data():
+    schema = {
+        'type': 'object',
+        'properties': {
+            'test': datatypes.Compound.JSON_SCHEMA
+        }
+    }
+    data = {'test': datatypes.Compound(cid=None, inchi=None, smiles=None, name="Hydrogen")}
+    raw_data = json.loads(json.dumps(data, cls=datatypes.JSONEncoder))
+    jsonschema.validate(raw_data, schema)
+
+
+def test_compound_invalid_data():
+    schema = {
+        'type': 'object',
+        'properties': {
+            'test': datatypes.Compound.JSON_SCHEMA
+        }
+    }
+    data = {'test': "Example"}
+    raw_data = json.loads(json.dumps(data, cls=datatypes.JSONEncoder))
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(raw_data, schema)
+
