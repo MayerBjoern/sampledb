@@ -422,6 +422,7 @@ def _validate_compound(instance: dict, schema: dict, path: typing.List[str]) -> 
     except Exception:
         raise ValidationError('Unable to create compound', path)
 
+    print(compound.to_json())
     instance.update(compound.to_json())
 
 

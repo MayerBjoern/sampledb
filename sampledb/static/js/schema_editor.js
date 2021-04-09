@@ -1040,40 +1040,6 @@ $(function() {
       updateSpecificProperty(path, real_path, schema, property_schema, has_error);
     }
 
-    function updateCompoundProperty(path, real_path) {
-      updateGenericProperty(path, real_path);
-      var has_error = false;
-      var schema = JSON.parse(input_schema.text());
-      var property_schema = schema['properties'][real_path[real_path.length-1]];
-      property_schema["type"] = "compound";
-
-      property_schema["smile"] = "";
-
-      var has_default = $('#schema-editor-object__' + path.join('__') + '-text-default-checkbox').prop('checked');
-      var default_value = $('#schema-editor-object__' + path.join('__') + '-text-default-input').val();
-
-      if (has_default) {
-        property_schema['default'] = default_value;
-      }
-
-      var has_placeholder = $('#schema-editor-object__' + path.join('__') + '-text-placeholder-checkbox').prop('checked');
-      var placeholder_value = $('#schema-editor-object__' + path.join('__') + '-text-placeholder-input').val();
-
-      if (has_placeholder) {
-        property_schema['placeholder'] = placeholder_value;
-      }
-
-      schema['properties'][real_path[real_path.length-1]] = property_schema;
-
-      input_schema.text(JSON.stringify(schema, null, 4));
-
-      window.schema_editor_errors[path.join('__') + '__specific'] = true;
-      if (!has_error) {
-        delete window.schema_editor_errors[path.join('__') + '__specific'];
-      }
-      $('button[name="action_submit"]').prop('disabled', (JSON.stringify(window.schema_editor_errors) !== '{}'));
-    }
-
     var required_label = node.find('.schema-editor-generic-property-required-label');
     var required_input = node.find('.schema-editor-generic-property-required-input');
     required_input.attr('id', 'schema-editor-object__' + path.join('__') + '-required-input');
