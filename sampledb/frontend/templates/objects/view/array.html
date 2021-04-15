@@ -280,7 +280,7 @@
     </div>
     <div class="conditions">
         {% for condition in item.conditions %}
-        <div>{{ condition.condition.text }}</div>
+        <div title="{{ condition.type.text }}">{{ condition.condition.text }}</div>
         {% endfor %}
         <img src="{{ url_for('static', filename='img/arrow-right.png') }}" alt="reaction arrow" style="width: 80%;" />
     </div>

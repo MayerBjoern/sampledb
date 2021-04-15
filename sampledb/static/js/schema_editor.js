@@ -944,17 +944,16 @@ $(function() {
                   "title": "Reaction condition",
                   "type": "object",
                   "properties": {
-                    "condition": {
-                      "title": "Condition",
-                      "type": "text"
-                    },
                     "type": {
                       "title": "Type",
                       "type": "text",
-                      "choices": ["Catalyst", "Pressure", "Solvent", "Temperature", "Other"],
+                      "choices": ["Catalyst", "Solvent", "Reagent", "Temperature", "Time", "Inert gas", "Pressure", "Other"],
                       "default": "Catalyst"
+                    },
+                    "condition": {
+                      "title": "Condition",
+                      "type": "text"
                     }
-
                   },
                   "propertyOrder": [
                     "type",

@@ -19,7 +19,6 @@ setting JSONEncoder.STRICT = True, but the verification will greatly reduce the 
 import datetime
 import json
 import pint
-import pubchempy
 
 from .units import ureg
 
@@ -242,10 +241,7 @@ class Compound(object):
                 'enum': ['compound']
             },
             'cid': {
-                'anyOf': [
-                    {'type': 'null'},
-                    {'type': 'number'}
-                ]
+                'type': 'string'
             },
             'inchi': {
                 'type': 'string'
@@ -275,26 +271,31 @@ class Compound(object):
             if value is not None:
                 setcnt += 1
 
-        if setcnt != len(self.parameters):
-            for key, value in self.parameters.items():
-                if value is None:
-                   continue
+        try:
+            import pubchempy
 
-                try:
-                    c = pubchempy.get_compounds(
-                        value,
-                        key)[0]
-                    break
-                except (IndexError, pubchempy.BadRequestError, ValueError):
-                    continue
+            if setcnt != len(self.parameters):
+                for key, value in self.parameters.items():
+                    if value is None:
+                       continue
 
-            if c is not None:
-                self.cid = int(c.cid)
-                self.smiles = c.isomeric_smiles
-                self.inchi = c.inchi
-                self.name = self.name if self.name is not None and len(self.name) > 0 else c.synonyms[0]
-            else:
-                raise ValueError("Can't find or complete compound")
+                    try:
+                        c = pubchempy.get_compounds(
+                            value,
+                            key)[0]
+                        break
+                    except (IndexError, pubchempy.BadRequestError, ValueError):
+                        continue
+
+                if c is not None:
+                    self.cid = str(c.cid)
+                    self.smiles = str(c.isomeric_smiles)
+                    self.inchi = str(c.inchi)
+                    self.name = str(self.name) if self.name is not None and len(self.name) > 0 else str(c.synonyms[0])
+                # else:
+                #    raise ValueError("Can't find or complete compound")
+        except Exception as e:
+            pass
 
     def __repr__(self):
         return '<{0}(name={1.name}, smiles={1.smiles})>'.format(type(self).__name__, self)
@@ -306,8 +307,10 @@ class Compound(object):
         json = {}
         for key, value in self.parameters.items():
             value = getattr(self, key)
-            if value is not None:
-                json[key] = value
+            if value is None:
+                value = ''
+
+            json[key] = value
 
         return json
 

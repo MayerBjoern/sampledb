@@ -401,8 +401,8 @@ def _validate_compound(instance: dict, schema: dict, path: typing.List[str]) -> 
     if len(required_keys.intersection(instance)) == 0:
         raise ValidationError('At least one of the following keys has to be given: {}'.format(required_keys), path)
 
-    if "cid" in instance and not isinstance(instance['cid'], int):
-        raise ValidationError('cid can only be a number', path)
+    if "cid" in instance and not isinstance(instance['cid'], str):
+        raise ValidationError('cid has to be a string', path)
     if "inchi" in instance:
         if not isinstance(instance['inchi'], str):
             raise ValidationError('InChI-Value must be str', path)
@@ -419,10 +419,9 @@ def _validate_compound(instance: dict, schema: dict, path: typing.List[str]) -> 
                                       inchi=instance['inchi'] if 'inchi' in instance else None,
                                       smiles=instance['smiles'] if 'smiles' in instance else None,
                                       name=instance['name'] if 'name' in instance else None)
-    except Exception:
+    except Exception as e:
         raise ValidationError('Unable to create compound', path)
 
-    print(compound.to_json())
     instance.update(compound.to_json())
 
 
