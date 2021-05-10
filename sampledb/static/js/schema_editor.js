@@ -306,8 +306,6 @@ $(function() {
       type = "bool";
     } else if (schema['type'] === 'quantity') {
       type = "quantity";
-    } else if(schema['type'] === 'calculatedquantity') {
-      type = "calculatedquantity";
     } else if (schema['type'] === 'datetime') {
       type = "datetime";
     } else if (schema['type'] === 'tags') {
@@ -1190,34 +1188,6 @@ $(function() {
     units_input.attr('id', 'schema-editor-object__' + path.join('__') + '-quantity-units-input');
     units_label.attr('for', units_input.attr('id'));
     if (type === 'quantity' && 'units' in schema) {
-      units_input.val(schema['units']);
-    } else {
-      units_input.val("");
-    }
-    units_input.on('change', updateProperty.bind(path));
-    if (window.schema_editor_error_message !== null && window.schema_editor_error_message === ("invalid units (at " + path[0] + ")")) {
-      var units_group = units_input.parent();
-      units_group.addClass("has-error");
-      units_group.find('.help-block').text("Please enter valid units");
-      window.schema_editor_errors[path.join('__') + '__specific'] = true;
-    }
-    var formula_label = node.find('.schema-editor-calculatedquantity-property-formula-label');
-    var formula_input = node.find('.schema-editor-calculatedquantity-property-formula-input');
-    formula_input.attr('id', 'schema-editor-object__' + path.join('__') + '-calculatedquantity-formula-input');
-    formula_label.attr('for', formula_input.attr('id'));
-    if (type === 'calculatedquantity' && 'formula' in schema) {
-      formula_input.val(schema["formula"]);
-    } else {
-      default_input.val("");
-    }
-
-    formula_input.on('change', updateProperty.bind(path));
-
-    var units_label = node.find('.schema-editor-calculatedquantity-property-units-label');
-    var units_input = node.find('.schema-editor-calculatedquantity-property-units-input');
-    units_input.attr('id', 'schema-editor-object__' + path.join('__') + '-calculatedquantity-units-input');
-    units_label.attr('for', units_input.attr('id'));
-    if (type === 'calculatedquantity' && 'units' in schema) {
       units_input.val(schema['units']);
     } else {
       units_input.val("");
